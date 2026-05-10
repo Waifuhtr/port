@@ -172,11 +172,8 @@ object SettingsPresetFactory {
 
     /** Parses language aliases with fallback to [SystemLanguage.System]. */
     private fun parseLanguage(value: String): SystemLanguage {
-        return when (normalize(value)) {
-            "english", "en" -> SystemLanguage.English
-            "spanish", "es" -> SystemLanguage.Spanish
-            else -> SystemLanguage.System
-        }
+        val normalized = normalize(value)
+        return SystemLanguage.from(normalized) ?: SystemLanguage.System
     }
 
     /** Normalizes tokens for resilient matching (`_`, `-`, spaces, case). */
