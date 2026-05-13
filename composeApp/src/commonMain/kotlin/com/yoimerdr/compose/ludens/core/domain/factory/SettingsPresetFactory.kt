@@ -172,8 +172,17 @@ object SettingsPresetFactory {
 
     /** Parses language aliases with fallback to [SystemLanguage.System]. */
     private fun parseLanguage(value: String): SystemLanguage {
-        val normalized = normalize(value)
-        return SystemLanguage.from(normalized) ?: SystemLanguage.System
+        val trimmed = value.trim()
+        val localeTag = trimmed.replace('_', '-')
+        val aliasLocaleTag = when (normalize(trimmed)) {
+            "english" -> "en"
+            "spanish" -> "es"
+            else -> null
+        }
+        return aliasLocaleTag?.let(SystemLanguage::fromLocaleTag)
+            ?: SystemLanguage.fromLocaleTag(localeTag)
+            ?: SystemLanguage.from(normalize(trimmed))
+            ?: SystemLanguage.System
     }
 
     /** Normalizes tokens for resilient matching (`_`, `-`, spaces, case). */
