@@ -16,8 +16,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  *
  * ### Convention
  * Adding a new language requires only **one** file:
- * - `composeResources/values-{tag}/strings.xml` — with a `<string name="{tag}">` entry
- *   for the language's self-name.
+ * - `composeResources/values-{tag}/strings.xml` — with a `<string name="{resourceName}">`
+ *   entry for the language's self-name, where `{resourceName}` is the normalized
+ *   resource key derived from `{tag}` (for example, `pt-BR` uses
+ *   `<string name="pt_br">...</string>`).
  *
  * The rest is discovered automatically at build time.
  */
