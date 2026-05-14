@@ -6,6 +6,8 @@
 
 package ludens.build.compose.language
 
+import ludens.build.compose.configuration.ludensConfiguration
+import ludens.build.helpers.assetsStoreDir
 import ludens.build.helpers.composeGenerationDir
 import ludens.build.helpers.composeKotlinSourceSet
 import ludens.build.helpers.composeResourcesDir
@@ -34,11 +36,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 class LanguageMetadataPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            val resolvedBaseLanguageTag = providers.provider {
+                resolveBaseLanguageTag(
+                    assetsStoreDir.resolve("languages"),
+                    ludensConfiguration.languages,
+                ) ?: "en"
+            }
 
             val generateTask =
                 tasks.register<LanguageMetadataGenerationTask>("generateLanguageMetadata") {
                     packageName.set("com.yoimerdr.compose.ludens.generated.language")
                     objectName.set("LanguageMetadata")
+                    baseLanguageTag.set(resolvedBaseLanguageTag)
 
                     resourceDir.set(
                         composeResourcesDir,

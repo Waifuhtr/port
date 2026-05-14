@@ -6,6 +6,7 @@
 package ludens.build.compose.language
 
 
+import ludens.build.compose.configuration.resolveActiveLanguages
 import java.io.File
 
 /**
@@ -20,7 +21,8 @@ data class LanguageEntry(
 /**
  * Discovers language tags by scanning Compose `values` directories.
  *
- * The default `values/` directory is treated as English (`en`). Locale
+ * The default `values/` directory is treated as the active base language provided by the build
+ * logic. If no base language is supplied, it falls back to English (`en`). Locale
  * directories such as `values-es` and `values-pt-rBR` are converted to
  * BCP-47 tags (`es`, `pt-BR`) and mapped to safe resource names (`es`,
  * `pt_br`). Only languages whose display label resource exists in any
@@ -28,6 +30,7 @@ data class LanguageEntry(
  */
 fun discoverLanguages(
     resourceDir: File,
+    baseLanguage: String = "en",
     warn: (String) -> Unit = {},
 ): List<LanguageEntry> {
     val valuesDirs = resourceDir.listFiles { file ->
@@ -39,8 +42,28 @@ fun discoverLanguages(
     return getLanguagesFrom(
         dirs = valuesDirs.toList(),
         names = allStringNames,
+        baseLanguage = baseLanguage,
         warn = warn,
     )
+}
+
+fun discoverAssetLanguages(assetLangDir: File): List<LanguageEntry> {
+    if (!assetLangDir.isDirectory) return emptyList()
+
+    val available = assetLangDir.listFiles()?.filter { it.isDirectory } ?: emptyList()
+    val allStringNames = collectStringNames(assetLangDir)
+    return getLanguagesFrom(available, allStringNames)
+}
+
+fun resolveBaseLanguageTag(
+    assetLangDir: File,
+    configuration: ludens.build.compose.configuration.LudensLanguageConfiguration,
+): String? {
+    val discovered = discoverAssetLanguages(assetLangDir)
+    if (discovered.isEmpty()) return null
+
+    val active = configuration.resolveActiveLanguages(discovered.map { it.tag }.toSet())
+    return active.firstOrNull()
 }
 
 /**
@@ -55,11 +78,12 @@ fun discoverLanguages(
 fun getLanguagesFrom(
     dirs: List<File>,
     names: Set<String>,
+    baseLanguage: String = "en",
     warn: (String) -> Unit = {},
 ): List<LanguageEntry> {
 
     return dirs.mapNotNull { dir ->
-        val language = languageEntryFor(dir)
+        val language = languageEntryFor(dir, baseLanguage)
 
         if (!File(dir, "strings.xml").exists()) {
             warn("Language directory ${dir.name} has no strings.xml, skipping")
@@ -76,9 +100,9 @@ fun getLanguagesFrom(
     }.distinctBy { it.tag }.sortedBy { it.tag.lowercase() }
 }
 
-fun languageEntryFor(dir: File): LanguageEntry? {
+fun languageEntryFor(dir: File, baseLanguage: String = "en"): LanguageEntry? {
     if (dir.name == "values") {
-        return LanguageEntry(tag = "en", labelResourceName = "en")
+        return LanguageEntry(tag = baseLanguage, labelResourceName = resourceNameFor(baseLanguage))
     }
 
     val qualifier = dir.name.removePrefix("values-")

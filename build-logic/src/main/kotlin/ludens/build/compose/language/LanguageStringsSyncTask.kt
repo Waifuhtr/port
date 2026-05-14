@@ -5,13 +5,12 @@ import ludens.build.compose.configuration.resolveActiveLanguages
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 /**
  * Synchronizes language `strings.xml` files from the asset store into Compose resources.
@@ -95,20 +94,5 @@ abstract class LanguageStringsSyncTask : DefaultTask() {
                 logger.info("[ludens] Copied ${stringsFile.name} -> $targetName/strings.xml")
             }
         }
-
-
-    }
-
-    /**
-     * Discovers the language directories available in the asset tree.
-     *
-     * The helper uses the existing language parsing rules and only returns folders that can be
-     * mapped to supported language tags.
-     */
-    private fun discoverAssetLanguages(assetLangDir: File): List<LanguageEntry> {
-        if (!assetLangDir.isDirectory) return emptyList()
-        val available = assetLangDir.listFiles()?.filter { it.isDirectory } ?: emptyList()
-        val allStringNames = collectStringNames(assetLangDir)
-        return getLanguagesFrom(available, allStringNames)
     }
 }
