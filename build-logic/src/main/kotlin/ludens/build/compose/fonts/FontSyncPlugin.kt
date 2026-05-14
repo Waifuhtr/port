@@ -42,6 +42,11 @@ class FontSyncPlugin : Plugin<Project> {
                     ?.srcDir(syncTask.map { it.generatedFile.get().asFile.parentFile })
             }
 
+            tasks.matching { it.name == "copyNonXmlValueResourcesForCommonMain" }
+                .configureEach {
+                    dependsOn(syncTask)
+                }
+
             tasks.withType(KotlinCompile::class.java).configureEach {
                 dependsOn(syncTask)
             }

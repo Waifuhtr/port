@@ -14,6 +14,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -49,8 +50,7 @@ abstract class FontSyncTask : DefaultTask() {
     /**
      * Destination directory inside Compose resources where copied font files are written.
      */
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:OutputDirectory
     abstract val resourceFontsDir: DirectoryProperty
 
     /**
@@ -83,6 +83,8 @@ abstract class FontSyncTask : DefaultTask() {
         val assetLang = assetsLanguagesDir.get().asFile
         val resourceFonts = resourceFontsDir.get().asFile
         val generatedFile = generatedFile.get().asFile
+
+        resourceFonts.mkdirs()
 
         val fontsConfig = configuration.fonts
         val langConfig = configuration.languages

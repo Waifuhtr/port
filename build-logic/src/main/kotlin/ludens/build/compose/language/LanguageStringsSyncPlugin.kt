@@ -28,7 +28,7 @@ class LanguageStringsSyncPlugin : Plugin<Project> {
      */
     override fun apply(target: Project) {
         with(target) {
-            val activationMode = PluginActivationMode.ReleaseOnly
+            val activationMode = PluginActivationMode.All
             if (!isPluginEnabled(activationMode)) return
 
             /**
@@ -40,6 +40,18 @@ class LanguageStringsSyncPlugin : Plugin<Project> {
                 configuration.set(ludensConfiguration.languages)
                 group = "ludens"
                 description = "Syncs language strings.xml from asset store to Compose resources."
+            }
+
+            syncTask.configure {
+                dependsOn("ludensFontSync")
+            }
+
+            tasks.matching {
+                it.name == "copyNonXmlValueResourcesForCommonMain" ||
+                it.name == "convertXmlValueResourcesForCommonMain" ||
+                it.name == "generateComposeFileResources"
+            }.configureEach {
+                dependsOn(syncTask)
             }
 
             tasks.withType(KotlinCompile::class.java).configureEach {

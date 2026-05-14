@@ -7,6 +7,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
@@ -31,8 +32,7 @@ abstract class LanguageStringsSyncTask : DefaultTask() {
     /**
      * Destination Compose resources directory where generated language folders are written.
      */
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:OutputDirectory
     abstract val resourcesDir: DirectoryProperty
 
     /**
