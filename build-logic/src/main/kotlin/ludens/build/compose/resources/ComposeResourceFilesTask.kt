@@ -1,11 +1,19 @@
 package ludens.build.compose.resources
 
+import ludens.build.helpers.parseResourceName
+import ludens.build.helpers.parseResourceNameFromFilename
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.util.PatternSet
 
 /**
@@ -86,7 +94,7 @@ abstract class ComposeResourceFilesTask : DefaultTask() {
     private data class Node(
         val name: String,
         val children: MutableList<Node> = mutableListOf(),
-        var filePath: String? = null
+        var filePath: String? = null,
     )
 
     private fun addFileToTree(root: Node, segments: Array<String>) {
@@ -95,9 +103,9 @@ abstract class ComposeResourceFilesTask : DefaultTask() {
             val isLastSegment = index == segments.size - 1
 
             val nodeName = if (isLastSegment) {
-                formatName(segment.substringBeforeLast("."))
+                parseResourceNameFromFilename(segment)
             } else {
-                formatName(segment)
+                parseResourceName(segment)
             }
 
             var child = current.children.find { it.name == nodeName && it.filePath == null }
@@ -125,19 +133,5 @@ abstract class ComposeResourceFilesTask : DefaultTask() {
                 sb.appendLine("$pad}")
             }
         }
-    }
-
-    private val kotlinKeywords = setOf(
-        "as", "break", "class", "continue", "do", "else", "false", "for", "fun", "if",
-        "in", "interface", "is", "null", "object", "package", "return", "super", "this",
-        "throw", "true", "try", "typealias", "typeof", "val", "var", "when", "while"
-    )
-
-    private fun formatName(name: String): String {
-        val sanitized = name.replace(Regex("[^a-zA-Z0-9_]"), "_")
-
-        val withPrefix = if (sanitized.isEmpty() || sanitized.first().isDigit()) "_$sanitized" else sanitized
-
-        return if (withPrefix in kotlinKeywords) "`$withPrefix`" else withPrefix
     }
 }

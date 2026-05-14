@@ -1,9 +1,11 @@
 package ludens.build.compose.resources
 
+import ludens.build.helpers.composeGenerationDir
+import ludens.build.helpers.composeKotlinSourceSet
+import ludens.build.helpers.composeResourcesFilesDir
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
@@ -19,24 +21,24 @@ class ComposeResourceFilesPlugin : Plugin<Project> {
             val generateTask =
                 tasks.register<ComposeResourceFilesTask>("generateComposeFileResources") {
                     inputDir.set(
-                        layout.projectDirectory.dir("src/commonMain/composeResources/files")
+                        composeResourcesFilesDir
                     )
                     outputFile.set(
-                        layout.buildDirectory.file(
-                            "generated/ludens/compose/resources/FileRes.kt"
-                        )
+                        composeGenerationDir
+                            .resolve("resources")
+                            .resolve("FileRes.kt")
                     )
                     packageName.set("com.yoimerdr.compose.ludens.generated.res")
-                    includePatterns.set(listOf(
-                        "**/www/index.html", "**/boot/**",
-                        "**/fallback/**",
-                    ))
+                    includePatterns.set(
+                        listOf(
+                            "**/www/index.html", "**/boot/**",
+                            "**/fallback/**",
+                        )
+                    )
                 }
 
             afterEvaluate {
-                extensions.findByType(KotlinMultiplatformExtension::class.java)
-                    ?.sourceSets
-                    ?.findByName("commonMain")
+                composeKotlinSourceSet
                     ?.kotlin
                     ?.srcDir(generateTask.map { it.outputFile.get().asFile.parentFile })
             }

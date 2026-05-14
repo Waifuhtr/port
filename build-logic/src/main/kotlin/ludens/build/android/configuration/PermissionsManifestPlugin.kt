@@ -1,7 +1,8 @@
 package ludens.build.android.configuration
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import ludens.build.helpers.androidGenerationDir
 import ludens.build.compose.configuration.ludensConfiguration
+import ludens.build.helpers.onAndroidManifests
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
@@ -16,8 +17,8 @@ class PermissionsManifestPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         // Generated manifest fragment containing only the enabled permissions.
-        val generatedManifestDir = project.layout.buildDirectory.dir("generated/ludens/android/permissions")
-        val generatedManifestFile = generatedManifestDir.map { it.file("AndroidManifest.xml") }
+        val generatedManifestFile = project.androidGenerationDir.resolve("permissions")
+            .resolve("AndroidManifest.xml")
 
         // Task input is derived from the loaded Ludens Android permission block.
         val generateManifestTask =
@@ -37,10 +38,8 @@ class PermissionsManifestPlugin : Plugin<Project> {
                 })
             }
 
-        val androidComponents = project.extensions.findByType(AndroidComponentsExtension::class.java)
-
-        androidComponents?.onVariants { variant ->
-            variant.sources.manifests.addGeneratedManifestFile(
+        project.onAndroidManifests {
+            it.addGeneratedManifestFile(
                 generateManifestTask,
                 GeneratePermissionsManifestTask::manifest
             )
