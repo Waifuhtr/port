@@ -32,7 +32,7 @@ class FontSyncPlugin : Plugin<Project> {
                         .resolve("Font.kt")
                 )
                 generatedPackage.set("com.yoimerdr.compose.ludens.generated.resources")
-                configuration = config
+                configuration.set(config)
                 group = "ludens"
                 description = "Syncs font files and generates FontFamily composables."
             }

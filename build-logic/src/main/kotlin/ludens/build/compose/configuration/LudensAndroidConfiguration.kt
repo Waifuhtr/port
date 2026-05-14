@@ -1,5 +1,7 @@
 package ludens.build.compose.configuration
 
+import java.io.Serializable
+
 /**
  * Android build configuration loaded from `ludens.properties`.
  *
@@ -69,7 +71,7 @@ data class LudensAndroidConfiguration(
      * Maps from `ludens.android.permissions.*`.
      */
     val permissions: LudensAndroidPermissionsConfiguration = LudensAndroidPermissionsConfiguration(),
-) {
+) : Serializable {
     init {
         require(minSDK >= 21) {
             "minSDK must be at least 21. Current value: $minSDK"
@@ -138,7 +140,7 @@ data class LudensAndroidManifestConfiguration(
      * Maps from `ludens.android.manifest.resizeableActivity`.
      */
     val resizeableActivity: Boolean = false,
-) {
+) : Serializable {
     private val supportedScreenOrientations = setOf(
         "unspecified",
         "landscape",
@@ -218,4 +220,4 @@ data class LudensAndroidPermissionsConfiguration(
      * Maps from `ludens.android.permissions.changeWifiState`.
      */
     val changeWifiState: Boolean = false,
-)
+) : Serializable

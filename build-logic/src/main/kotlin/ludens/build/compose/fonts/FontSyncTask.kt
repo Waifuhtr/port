@@ -12,7 +12,6 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -56,8 +55,8 @@ abstract class FontSyncTask : DefaultTask() {
     /**
      * Full Ludens configuration used to resolve base and fallback font names.
      */
-    @get:Internal
-    var configuration: LudensConfiguration = LudensConfiguration()
+    @get:Input
+    abstract val configuration: Property<LudensConfiguration>
 
     /**
      * Package name used for the generated Kotlin source file.
@@ -86,8 +85,9 @@ abstract class FontSyncTask : DefaultTask() {
 
         resourceFonts.mkdirs()
 
-        val fontsConfig = configuration.fonts
-        val langConfig = configuration.languages
+        val config = configuration.get()
+        val fontsConfig = config.fonts
+        val langConfig = config.languages
 
         // Build the active language list from the asset store and the configured allowlist.
         val discoveredTags = discoverLanguageTags(assetLang)

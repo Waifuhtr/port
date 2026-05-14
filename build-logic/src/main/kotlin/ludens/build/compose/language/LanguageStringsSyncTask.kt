@@ -6,7 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -38,7 +38,7 @@ abstract class LanguageStringsSyncTask : DefaultTask() {
     /**
      * Language allowlist used to decide which discovered translations are copied.
      */
-    @get:Internal
+    @get:Input
     abstract val configuration: Property<LudensLanguageConfiguration>
 
     /**
@@ -63,19 +63,19 @@ abstract class LanguageStringsSyncTask : DefaultTask() {
         val defaultTag = active.first()
         val activeSet = active.toSet()
 
-
-        discovered.forEach { entry ->
-            // Remove the previously generated file for this language before rewriting it.
-            val androidQualifier = androidQualifier(entry.tag)
-            val file = resourcesRoot
-                .resolve("values-${androidQualifier}")
-                .resolve("strings.xml")
-
-            if (file.exists()) {
-                file.delete()
-                logger.info("[ludens] Deleted ${file.name} from ${file.parentFile.name}")
+        // Remove previously generated language files before rewriting the active set.
+        resourcesRoot.listFiles()
+            ?.filter { it.isDirectory && (it.name == "values" || it.name.startsWith("values-")) }
+            ?.forEach { dir ->
+                val stringsFile = dir.resolve("strings.xml")
+                if (stringsFile.exists()) {
+                    stringsFile.delete()
+                    logger.info("[ludens] Deleted ${stringsFile.name} from ${dir.name}")
+                }
             }
 
+        discovered.forEach { entry ->
+            val androidQualifier = androidQualifier(entry.tag)
             if (entry.tag !in activeSet) return@forEach
 
             // Copy the active strings.xml file from assets into the matching Compose directory.
@@ -86,9 +86,10 @@ abstract class LanguageStringsSyncTask : DefaultTask() {
             val stringsFile = sourceDir.resolve("strings.xml")
 
             if (stringsFile.isFile) {
+                val targetDir = resourcesRoot.resolve(targetName)
+                targetDir.mkdirs()
                 stringsFile.copyTo(
-                    resourcesRoot.resolve(targetName)
-                        .resolve("strings.xml"),
+                    targetDir.resolve("strings.xml"),
                     overwrite = true,
                 )
                 logger.info("[ludens] Copied ${stringsFile.name} -> $targetName/strings.xml")
