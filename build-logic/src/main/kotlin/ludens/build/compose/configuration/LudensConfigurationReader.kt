@@ -9,8 +9,8 @@ import org.gradle.api.Project
  * Shared `Properties` parser for Ludens build configuration.
  *
  * It reads `ludens.properties` first and falls back to `gradle.properties` only for the
- * deprecated shape. The parser accepts nested keys such as `ludens.android.id` and ignores
- * unknown keys.
+ * deprecated shape. The parser accepts nested keys such as `ludens.android.id`, ignores
+ * unknown keys, and maps missing values to each data class default.
  */
 private val propsMapper by lazy {
     JavaPropsMapper().registerModule(kotlinModule())

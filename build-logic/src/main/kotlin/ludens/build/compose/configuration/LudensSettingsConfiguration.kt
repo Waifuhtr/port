@@ -9,13 +9,15 @@ data class LudensSettingsConfiguration(
     /**
      * Preset name to generate.
      *
-     * Maps from `ludens.settings.presetName`.
+     * Maps from `ludens.settings.presetName`. When absent, the generator falls back to the
+     * built-in `recommended` preset name.
      */
     val presetName: String? = null,
     /**
      * Raw preset values.
      *
-     * Maps from `ludens.settings.preset.*`.
+     * Maps from `ludens.settings.preset.*`. These values are parsed and normalized by
+     * [resolvedSettingsPreset] before the generated Kotlin source is written.
      */
     val preset: LudensSettingsPresetConfiguration = LudensSettingsPresetConfiguration(),
 )
@@ -89,14 +91,24 @@ data class LudensSettingsPresetConfiguration(
  * This is the final in-memory representation consumed by the generation task.
  */
 data class LudensResolvedSettingsPresetConfiguration(
+    /** Generated preset name written to the Kotlin source. */
     val presetName: String,
+    /** Default value for the muted tool flag. */
     val toolMuted: Boolean,
+    /** Default value for the FPS overlay flag. */
     val toolShowFps: Boolean,
+    /** Default value for the WebGL flag. */
     val toolUseWebgl: Boolean,
+    /** Default value for on-screen controls. */
     val controlEnabled: Boolean,
+    /** Default alpha for on-screen controls. */
     val controlAlpha: Float,
+    /** Default value for quick actions. */
     val actionEnabled: Boolean,
+    /** Quick action item list written into the generated preset. */
     val actionItems: String,
+    /** Default system theme value. */
     val systemTheme: String,
+    /** Default system language value. */
     val systemLanguage: String,
 )
