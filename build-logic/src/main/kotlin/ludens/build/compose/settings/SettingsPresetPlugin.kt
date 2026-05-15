@@ -1,5 +1,6 @@
 package ludens.build.compose.settings
 
+import ludens.build.LudensComposeExtension
 import ludens.build.compose.configuration.ludensConfiguration
 import ludens.build.compose.configuration.resolvedSettingsPreset
 import ludens.build.helpers.composeGenerationDir
@@ -45,4 +46,25 @@ class SettingsPresetPlugin : Plugin<Project> {
                 }
         }
     }
+}
+
+/**
+ * Applies the [SettingsPresetPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { compose { ... } }` block.
+ * Once applied, the plugin reads the settings preset values from `ludens.properties`,
+ * generates a `LudensSettingsPreset.kt` source file with the resolved defaults,
+ * and ensures the generated source is available to `commonMain` before compilation.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     compose {
+ *         settingsPreset()
+ *     }
+ * }
+ * ```
+ */
+fun LudensComposeExtension.settingsPreset() {
+    project.pluginManager.apply(SettingsPresetPlugin::class.java)
 }

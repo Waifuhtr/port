@@ -1,5 +1,6 @@
 package ludens.build.compose.resources
 
+import ludens.build.LudensComposeExtension
 import ludens.build.helpers.composeResourcesFilesDir
 import ludens.build.helpers.projectWwwDir
 import org.gradle.api.Plugin
@@ -50,4 +51,28 @@ class WebAssetsSyncPlugin : Plugin<Project> {
             }
         }
     }
+}
+
+/**
+ * Applies the [WebAssetsSyncPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { compose { ... } }` block.
+ * Once applied, the plugin synchronises the contents of `project/www` into
+ * `composeResources/files/www`. The sync is skipped if `project/www` contains
+ * only the default `index.html`, allowing developers to manage the `www` folder
+ * directly inside compose resources.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     compose {
+ *         resourcesSync()
+ *     }
+ * }
+ * ```
+ */
+fun LudensComposeExtension.resourcesSync() {
+    project.pluginManager.apply(
+        WebAssetsSyncPlugin::class.java
+    )
 }

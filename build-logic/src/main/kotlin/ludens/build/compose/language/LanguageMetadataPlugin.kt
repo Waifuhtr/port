@@ -6,6 +6,7 @@
 
 package ludens.build.compose.language
 
+import ludens.build.LudensComposeExtension
 import ludens.build.compose.configuration.ludensConfiguration
 import ludens.build.helpers.assetsStoreDir
 import ludens.build.helpers.composeGenerationDir
@@ -65,8 +66,11 @@ class LanguageMetadataPlugin : Plugin<Project> {
                     ?.srcDir(generateTask.map { it.outputFile.get().asFile.parentFile })
             }
 
-            generateTask.configure {
-                dependsOn("ludensLanguageStringsSync")
+            val syncTask = tasks.findByName("ludensLanguageStringsSync")
+            if (syncTask != null) {
+                generateTask.configure {
+                    dependsOn(syncTask)
+                }
             }
 
             tasks.withType(KotlinCompile::class.java)
@@ -75,4 +79,25 @@ class LanguageMetadataPlugin : Plugin<Project> {
                 }
         }
     }
+}
+
+/**
+ * Applies the [LanguageMetadataPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { compose { ... } }` block.
+ * Once applied, the plugin scans the Compose resource value directories, discovers
+ * available language tags, and generates a [LanguageMetadata] object that the
+ * application uses to enumerate supported languages at runtime.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     compose {
+ *         languageMetadata()
+ *     }
+ * }
+ * ```
+ */
+fun LudensComposeExtension.languageMetadata() {
+    project.pluginManager.apply(LanguageMetadataPlugin::class.java)
 }

@@ -1,5 +1,6 @@
 package ludens.build.compose.resources
 
+import ludens.build.LudensComposeExtension
 import ludens.build.helpers.composeGenerationDir
 import ludens.build.helpers.composeKotlinSourceSet
 import ludens.build.helpers.composeResourcesFilesDir
@@ -49,4 +50,25 @@ class ComposeResourceFilesPlugin : Plugin<Project> {
                 }
         }
     }
+}
+
+/**
+ * Applies the [ComposeResourceFilesPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { compose { ... } }` block.
+ * Once applied, the plugin scans `composeResources/files`, generates a typed
+ * accessor object (`FileRes.kt`) for the project's file resources, and exposes
+ * the generated source to `commonMain` for use in the app.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     compose {
+ *         filesRes()
+ *     }
+ * }
+ * ```
+ */
+fun LudensComposeExtension.filesRes() {
+    project.pluginManager.apply(ComposeResourceFilesPlugin::class.java)
 }

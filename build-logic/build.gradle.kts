@@ -19,6 +19,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        register("ludensBuild") {
+            id = "ludens.build"
+            implementationClass = "ludens.build.LudensBuildPlugin"
+        }
         register("composeGenerateFileRes") {
             id = "ludens.build.compose.resources.files"
             implementationClass = "ludens.build.compose.resources.ComposeResourceFilesPlugin"

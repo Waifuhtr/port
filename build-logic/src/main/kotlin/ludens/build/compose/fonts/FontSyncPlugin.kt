@@ -1,10 +1,11 @@
 package ludens.build.compose.fonts
 
+import ludens.build.LudensComposeExtension
 import ludens.build.compose.configuration.ludensConfiguration
+import ludens.build.helpers.assetsStoreDir
 import ludens.build.helpers.composeGenerationDir
 import ludens.build.helpers.composeKotlinSourceSet
 import ludens.build.helpers.composeResourcesDir
-import ludens.build.helpers.assetsStoreDir
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.register
@@ -53,3 +54,25 @@ class FontSyncPlugin : Plugin<Project> {
         }
     }
 }
+
+/**
+ * Applies the [FontSyncPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { compose { ... } }` block.
+ * Once applied, the plugin synchronises font files from the asset store into
+ * Compose resources and generates `FontFamily` composables for use in the app
+ * according the configured languages.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     compose {
+ *         fontsSync()
+ *     }
+ * }
+ * ```
+ */
+fun LudensComposeExtension.fontsSync() {
+    project.pluginManager.apply(FontSyncPlugin::class.java)
+}
+

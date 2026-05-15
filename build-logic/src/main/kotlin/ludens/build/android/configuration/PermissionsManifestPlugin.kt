@@ -1,5 +1,6 @@
 package ludens.build.android.configuration
 
+import ludens.build.LudensAndroidExtension
 import ludens.build.helpers.androidGenerationDir
 import ludens.build.compose.configuration.ludensConfiguration
 import ludens.build.helpers.onAndroidManifests
@@ -46,3 +47,28 @@ class PermissionsManifestPlugin : Plugin<Project> {
         }
     }
 }
+
+/**
+ * Applies the [PermissionsManifestPlugin] to the current project.
+ *
+ * This DSL function should be called inside a `ludens { android { ... } }` block.
+ * Once applied, the plugin reads the permission flags from `ludens.properties`,
+ * generates a small Android manifest fragment containing only the enabled
+ * permissions, and wires that fragment into the main Android source set before
+ * manifest merge.
+ *
+ * Usage:
+ * ```kotlin
+ * ludens {
+ *     android {
+ *         permissions()
+ *     }
+ * }
+ * ```
+ */
+fun LudensAndroidExtension.permissions() {
+    project.pluginManager.apply(
+        PermissionsManifestPlugin::class.java
+    )
+}
+
