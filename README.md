@@ -82,16 +82,25 @@ Depending on MV/MZ version, you may get either a game folder containing `www` or
 
 ### Import Assets
 
-Move the full `www` folder to:
+You have two valid options to import your game assets:
 
-`composeApp/src/commonMain/composeResources/files`
+**Option A (Recommended): Root Folder**
+Place your full `www` folder at the root of the project:
+`project/www/`
+
+> [!NOTE]
+> The build system will automatically synchronize these files into the required internal location during build. This automatic synchronization will **only** occur if the `project/www/` folder contains more than just the `index.html` file.
+
+**Option B: Internal Folder**
+Move the full `www` folder directly to the internal Compose resources path:
+`composeApp/src/commonMain/composeResources/files/www/`
 
 > [!WARNING]
 > **Case Sensitivity**: Windows file system is **case-insensitive** (`/Path/Example` = `/path/example`), but Android and iOS use **case-sensitive** file systems. Ensure that all file references in your game's code (images, audio, data files) use **exact matching names**. If a file is named `MyImage.png`, you must reference it as `MyImage.png`, not `myimage.png`. This is a common source of silent failures on mobile.
-> 
+>
 > **Tip**: You can use the plugin **[YDP_CrossAssets](https://github.com/yoimerdr/rpgm-plugins)** from the rpgm-plugins repository to automatically normalize file paths and avoid this issue.
 
-Required structure:
+Required internal structure after import or sync:
 
 ```text
 files/
@@ -142,13 +151,7 @@ Coming soon. Current setup follows default Compose Multiplatform template config
 
 ## Contributing
 
-Contributions are welcome. For major changes, open an issue first.
-
-1. Fork the repository.
-2. Create your branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, development setup, and the process for submitting pull requests.
 
 ## License
 

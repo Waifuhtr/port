@@ -5,9 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- New language support: Chinese (`zh`), Japanese (`ja`), Portuguese - Brazil (`pt-rBR`), and Russian (`ru`) for UI. ([@rainbowtrash2333](https://github.com/yoimerdr/ludens/pull/1))
+- Automatic synchronization of web assets from the `project/www/` root directory to Compose resources.
+- Font and language strings sync plugins for resource management within the `build-logic` to strip out unused languages and fonts.
+- Language and font configuration support for resource generation, including base language metadata support.
+- Project extension utilities for asset management and resource name parsing.
+- Multilingual support with optimized i18n loading, and language alias parsing from presets configuration.
+- Conditional rendering of `LanguageAction` based on available languages.
+- `CODE_OF_CONDUCT.md` and updated issue templates.
+
+### Changed
+
+- Enhanced `SideTabOptions` layout, improving text overflow handling.
+- Optimized view model injection and enhanced state management using `rememberSaveable`.
+- Removed specific fonts to use variable font types.
+- Reduced manual resource handling by leveraging new helper utilities.
+- Moved configuration files and enhanced internal documentation for clarity.
+- Changed how plugins are applied: now there is only a single `ludens.build` plugin, and the others must be activated/applied using the DSL in gradle.
+- Updated project documentation (`README`, `BUILD`, `CONTRIBUTING`) to detail the new root folder asset synchronization method.
+
+### Fixed
+
+- Fixed unexpected error has been fixed in the generation of icon resources during compilation, which was causing the files to be placed inside the “generated” folder.
+- Fixed locale handling by including configuration orientation in `remember`.
+
 ## [0.3.0] - 2026-04-25
 
 ### Added
+
 - `build-logic` module with custom Gradle plugins for Ludens configuration, generated resources, and generated permissions.
 - Root [`ludens.properties`](ludens.properties) configuration as the main source for app identity, manifest flags, permissions, and settings presets.
 - Generated settings preset source and typed compose resource accessors.
@@ -19,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Boot resource handling, including `www/index.html` and memory-cleaner boot script support.
 
 ### Changed
+
 - Android build now reads Ludens configuration from [`ludens.properties`](ludens.properties) and applies app identity and manifest placeholders from that model.
 - Settings preset generation now resolves default values from the new configuration pipeline instead of hardcoded app-side defaults.
 - Home and settings screens were reworked for updated control behavior, action ordering, and more responsive layouts.
@@ -27,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The plugin and settings experience was updated around `YDP_Ludens.js` and related control/key handling.
 
 ### Fixed
+
 - Fixed configuration loading behavior that could be affected by cache or stale values.
 - Fixed missing file/path handling for resource bootstrapping.
 - Fixed settings layout padding mismatches.
@@ -36,13 +67,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.0] - 2026-02-05
 
 ### Added
+
 - onRestart callback implementation for navigation and state reset
 
 ### Changed
+
 - Refactored settings events to use `UpdateSettings` sealed interface pattern
 - Improved settings event and request handling
 
 ### Fixed
+
 - Fixed on-screen controls not showing when YDP_Ludens plugin is disabled or not present
 - Fixed unnecessary WebView restart when updating settings without navigating away
 
@@ -53,19 +87,23 @@ Initial project release.
 ### Added
 
 #### Android Build Support
+
 - Android 21+ support (Designed for modern devices)
 - Optimized WebView for RPG Maker MV/MZ
 
 #### Native Overlay Controls
+
 - Virtual Joystick (Configurable opacity & position)
 - Action Buttons (A, B, X, Y)
-  
+
 #### Comprehensive Settings System
+
 - System Theme & Language
 - Audio Mute & FPS Counter
 - WebGL Toggle
 
 #### Easy Android Build Configuration
+
 - Customizable applicationId, Version, and Name via gradle.properties
 - Simplified Asset Injection (composeResources/files/www)
 

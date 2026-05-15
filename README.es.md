@@ -82,16 +82,25 @@ Segun la version MV/MZ, puedes obtener una carpeta de juego que contiene `www` o
 
 ### Importar Assets
 
-Mueve la carpeta completa `www` a:
+Tienes dos opciones válidas para importar los assets de tu juego:
 
-`composeApp/src/commonMain/composeResources/files`
+**Opción A (Recomendada): Carpeta Raíz**
+Coloca la carpeta `www` completa en la raíz del proyecto:
+`project/www/`
+
+> [!NOTE]
+> El sistema de construcción sincronizará automáticamente estos archivos en la ubicación interna requerida durante la compilación. Esta sincronización automática **solo** ocurrirá si la carpeta `project/www/` contiene más que solo el archivo `index.html`.
+
+**Opción B: Carpeta Interna**
+Mueve la carpeta `www` completa directamente a la ruta interna de recursos de Compose:
+`composeApp/src/commonMain/composeResources/files/www/`
 
 > [!WARNING]
 > **Sensibilidad de Mayúsculas/Minúsculas**: El sistema de archivos de Windows es **insensible** (`/Path/Example` = `/path/example`), pero Android e iOS usan sistemas de archivos **sensibles**. Asegúrate de que todas las referencias a archivos en el código de tu juego (imágenes, audio, archivos de datos) usen nombres **exactamente iguales**. Si un archivo se llama `MiImagen.png`, debes referenciarlo como `MiImagen.png`, no como `miimagen.png`. Esta es una causa común de fallos silenciosos en móviles.
-> 
+>
 > **Tip**: Puedes usar el plugin **[YDP_CrossAssets](https://github.com/yoimerdr/rpgm-plugins)** del repositorio rpgm-plugins para normalizar automáticamente las rutas de archivos y evitar este problema.
 
-Estructura requerida:
+Estructura interna requerida después de importar o sincronizar:
 
 ```text
 files/

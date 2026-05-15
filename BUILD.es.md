@@ -1,4 +1,5 @@
 # Guía de Construcción Paso a Paso
+
 [Read in English](BUILD.md) | [Docs Web](https://tryludens.vercel.app/)
 
 Esta guía detalla el proceso completo para configurar, personalizar y generar un archivo APK/AAB de tu juego RPG Maker MV/MZ utilizando **Ludens**.
@@ -6,11 +7,12 @@ Esta guía detalla el proceso completo para configurar, personalizar y generar u
 ## Configuración del Entorno
 
 ### Android Studio
+
 Descarga e instala Android Studio. Para este proyecto se recomienda usar la versión **Otter 2 Feature Drop | 2025.2.2** o superior.
 
-*   **Enlace de descarga**: [developer.android.com/studio](https://developer.android.com/studio)
-*   **Guia de instalación**: [developer.android.com/studio/install](https://developer.android.com/studio/install)
-*   [Guía de configuración oficial](https://developer.android.com/courses/pathways/android-basics-compose-unit-1-pathway-2)
+- **Enlace de descarga**: [developer.android.com/studio](https://developer.android.com/studio)
+- **Guia de instalación**: [developer.android.com/studio/install](https://developer.android.com/studio/install)
+- [Guía de configuración oficial](https://developer.android.com/courses/pathways/android-basics-compose-unit-1-pathway-2)
 
 <p align="center">
   <img src="docs/src/assets/images/guide/android-studio-setup.png" alt="Configuración de Android Studio" height="320">
@@ -19,24 +21,27 @@ Descarga e instala Android Studio. Para este proyecto se recomienda usar la vers
 </p>
 
 Asegúrate de que durante la instalación se incluyan:
-*   Android SDK
-*   Android SDK Platform-Tools
-*   Android Virtual Device (Recomendado para pruebas)
+
+- Android SDK
+- Android SDK Platform-Tools
+- Android Virtual Device (Recomendado para pruebas)
 
 ### Java Development Kit (JDK)
+
 El proyecto requiere **Java 17**. Android Studio suele incluir una versión compatible (JetBrains Runtime), pero puedes instalar JDK 17 manualmente si lo prefieres.
 
-*   **Guía de instalación oficial**: [Cómo instalar el JDK](https://docs.oracle.com/en/java/javase/17/install/overview-jdk-installation.html)
+- **Guía de instalación oficial**: [Cómo instalar el JDK](https://docs.oracle.com/en/java/javase/17/install/overview-jdk-installation.html)
 
 ## Prerrequisitos del Juego (RPG Maker)
 
 Antes de exportar tu juego, considera lo siguiente:
 
 ### Plugins y Compatibilidad
-*   **Advertencia**: Muchos plugins de RPG Maker están diseñados solo para PC (escritorio). Verifica que tus plugins sean compatibles con entornos móviles (WebView).
-*   **Plugin Recomendado**: [`YDP_Ludens.js`](resources/plugins/js/YDP_Ludens.js). Puedes encontrar la última versión y otros plugins recomendados en el [repositorio rpgm-plugins](https://github.com/yoimerdr/rpgm-plugins).
-    *   Este plugin ayuda a solucionar problemas de carga de fuentes en versiones antiguas de WebView y habilita funcionalidades extra.
-    *   **Importante**: Colócalo como el **primer plugin** en tu lista.
+
+- **Advertencia**: Muchos plugins de RPG Maker están diseñados solo para PC (escritorio). Verifica que tus plugins sean compatibles con entornos móviles (WebView).
+- **Plugin Recomendado**: [`YDP_Ludens.js`](resources/plugins/js/YDP_Ludens.js). Puedes encontrar la última versión y otros plugins recomendados en el [repositorio rpgm-plugins](https://github.com/yoimerdr/rpgm-plugins).
+  - Este plugin ayuda a solucionar problemas de carga de fuentes en versiones antiguas de WebView y habilita funcionalidades extra.
+  - **Importante**: Colócalo como el **primer plugin** en tu lista.
 
 <p align="center">
   <img src="docs/src/assets/images/guide/plugin-manager-ydp_ludens.png" alt="Gestor de Plugins con YDP_Ludens.js" height="320">
@@ -47,6 +52,7 @@ Antes de exportar tu juego, considera lo siguiente:
 ## Configuración del Proyecto Ludens
 
 ### Obtener el Proyecto
+
 1.  Clona este repositorio o descárgalo como ZIP y extráelo.
 2.  Abre Android Studio.
 3.  Selecciona **Open** y navega hasta la carpeta del proyecto `ludens`.
@@ -59,13 +65,16 @@ Antes de exportar tu juego, considera lo siguiente:
 </p>
 
 ### Estructura de Directorios
+
 Familiarízate con la ubicación de los archivos clave:
-*   `composeApp/src/commonMain/composeResources/files`: Aquí irá tu juego.
-*   [`ludens.properties`](ludens.properties): Configuración principal de Ludens (identidad app, flags de manifest, permisos y preset de settings).
-*   [`gradle.properties`](gradle.properties): Opciones de Gradle/Kotlin para rendimiento y sistema de build.
-*   [`keystore.properties`](keystore.properties): Credenciales locales de firma release (no subir al repositorio).
+
+- `composeApp/src/commonMain/composeResources/files`: Aquí irá tu juego.
+- [`ludens.properties`](ludens.properties): Configuración principal de Ludens (identidad app, flags de manifest, permisos y preset de settings).
+- [`gradle.properties`](gradle.properties): Opciones de Gradle/Kotlin para rendimiento y sistema de build.
+- [`keystore.properties`](keystore.properties): Credenciales locales de firma release (no subir al repositorio).
 
 ## Exportar el Juego
+
 1.  Abre tu proyecto en RPG Maker MV o MZ.
 2.  Ve a **Archivo** > **Despliegue** (Deployment).
 3.  Selecciona la plataforma **Android / iOS** (Recomendado). Si no está disponible, usa **Web Browsers**.
@@ -86,12 +95,26 @@ Este es el paso más crítico.
 >
 > **Tip**: Puedes usar el plugin **[YDP_CrossAssets](https://github.com/yoimerdr/rpgm-plugins)** del repositorio rpgm-plugins para normalizar automáticamente las rutas de archivos y evitar este problema.
 
-1.  Navega a la carpeta del proyecto en tu explorador de archivos:
-    `composeApp/src/commonMain/composeResources/files`
-2.  Copia la carpeta **`www`** completa de tu exportación y pégala dentro de `files` o si solo cuentas con los assets del juego, crea la carpeta `www` y pega los archivos dentro de ella.
+Tienes dos opciones válidas para integrar tus assets:
 
-**Estructura Obligatoria:**
-La aplicación espera encontrar `index.html` dentro de `www`.
+**Opción A (Recomendada): Sincronización desde Carpeta Raíz**
+
+1. Navega a la raíz del repositorio del proyecto Ludens.
+2. Ubica la carpeta `project/www/`.
+3. Copia el contenido de tu carpeta **`www`** exportada dentro de `project/www/`.
+
+> [!NOTE]
+> El sistema de construcción sincroniza automáticamente los assets desde `project/www/` hacia la carpeta interna requerida (`composeResources/files/www`). Esta sincronización **solo** ocurre si hay archivos en `project/www/` además del archivo `index.html`.
+
+**Opción B: Colocación Directa en Carpeta Interna**
+
+1. Navega a la carpeta interna de recursos:
+   `composeApp/src/commonMain/composeResources/files/`
+2. Copia la carpeta **`www`** completa de tu exportación y pégala dentro de `files`.
+
+**Estructura Interna Obligatoria:**
+Después de usar cualquiera de las opciones, la aplicación espera encontrar `index.html` dentro del directorio interno `www`.
+
 <p align="center">
   <img src="docs/src/assets/images/guide/ludens-android-studio-files.png" alt="Estructura de archivos en Android Studio" height="320">
   <br>
@@ -99,6 +122,7 @@ La aplicación espera encontrar `index.html` dentro de `www`.
 </p>
 
 ## Android
+
 ### Personalización
 
 Edita el archivo [`ludens.properties`](ludens.properties) en la raíz del proyecto.
@@ -142,8 +166,8 @@ ludens.android.manifest.screenOrientation=sensorLandscape
 ludens.android.manifest.usesCleartextTraffic=false
 ludens.android.manifest.resizeableActivity=false
 
-# Manifest de permisos generado 
-# Todos los permisos listados son opcionales; 
+# Manifest de permisos generado
+# Todos los permisos listados son opcionales;
 # El wrapper no requiere ni usa funcionalidades que dependan de ellos.
 # Si tu juego requiere permisos adicionales aparte de acceso basico de red
 # Es posible que necesites editar el codigo fuente del wrapper.
@@ -160,7 +184,9 @@ Estos valores son consumidos por plugins personalizados en `build-logic` durante
 > Ludens soporta más propiedades de configuración. Revisa directamente [`ludens.properties`](ludens.properties) para ver la lista completa y su descripción.
 
 #### Icono de la App
+
 Reemplaza las imágenes en `composeApp/src/androidMain/res/mipmap-*` o usa la herramienta **Image Asset Studio**:
+
 1.  Click derecho en `composeApp/src/androidMain/res`.
 2.  New > Image Asset.
 
@@ -175,6 +201,7 @@ Reemplaza las imágenes en `composeApp/src/androidMain/res/mipmap-*` o usa la he
 Para pruebas durante el desarrollo, puedes usar la terminal o crear una configuración en Android Studio.
 
 #### Opción A: Configuración de Ejecución (Recomendado)
+
 Si prefieres usar la interfaz de Android Studio:
 
 1.  Abre el menú de configuraciones y selecciona **Edit Configurations...**.
@@ -199,6 +226,7 @@ Si prefieres usar la interfaz de Android Studio:
 </p>
 
 #### Opción B: Terminal
+
 1.  Abre la pestaña **Terminal** en Android Studio.
 2.  Ejecuta:
     ```bash
@@ -206,6 +234,7 @@ Si prefieres usar la interfaz de Android Studio:
     ```
 
 #### Resultado
+
 Independientemente del método, el APK aparecerá en: `composeApp/build/outputs/apk/debug/composeApp-debug.apk`.
 
 > [!TIP]
@@ -222,6 +251,7 @@ Independientemente del método, el APK aparecerá en: `composeApp/build/outputs/
 Para generar el APK final firmado:
 
 #### Opción A: Asistente de Android Studio
+
 Esta opción te guía paso a paso para firmar tu aplicación.
 
 1.  Ve a **Build > Generate Signed Bundle / APK**.
@@ -234,20 +264,19 @@ Esta opción te guía paso a paso para firmar tu aplicación.
 2.  Selecciona **APK** y haz clic en Next.
 
 3.  Configura tu Keystore (Almacén de claves).
+    - **Crear Nueva**: Si no tienes una, haz clic en **Create new...**.
+      <p align="center">
+        <img src="docs/src/assets/images/guide/ludens-build-configurations-sign-creation.png" alt="Crear Keystore" height="320">
+        <br>
+        <em>Figura 13: Creación de un nuevo almacén de claves (Keystore). Guarda bien la contraseña y el archivo .jks.</em>
+      </p>
 
-    *   **Crear Nueva**: Si no tienes una, haz clic en **Create new...**.
-        <p align="center">
-          <img src="docs/src/assets/images/guide/ludens-build-configurations-sign-creation.png" alt="Crear Keystore" height="320">
-          <br>
-          <em>Figura 13: Creación de un nuevo almacén de claves (Keystore). Guarda bien la contraseña y el archivo .jks.</em>
-        </p>
-
-    *   **Usar Existente**: Si ya tienes una, cárgala e introduce las credenciales.
-        <p align="center">
-          <img src="docs/src/assets/images/guide/ludens-build-configurations-sign-use.png" alt="Usar Keystore" height="320">
-          <br>
-          <em>Figura 14: Credenciales del Keystore.</em>
-        </p>
+    - **Usar Existente**: Si ya tienes una, cárgala e introduce las credenciales.
+      <p align="center">
+        <img src="docs/src/assets/images/guide/ludens-build-configurations-sign-use.png" alt="Usar Keystore" height="320">
+        <br>
+        <em>Figura 14: Credenciales del Keystore.</em>
+      </p>
 
 4.  Selecciona el build flavor **release** y haz clic en **Create**.
 <p align="center">
@@ -264,6 +293,7 @@ Esta opción te guía paso a paso para firmar tu aplicación.
 </p>
 
 #### Opción B: Tarea Gradle (Configurable)
+
 Similar al proceso de Debug, esta opción es ideal para automatizar el build, pero requiere configuración manual previa.
 
 1.  Asegúrate de tener tu archivo `.jks` (Keystore) generado (puedes usar el paso 3 de la Opción A para crearlo).
@@ -279,6 +309,7 @@ Similar al proceso de Debug, esta opción es ideal para automatizar el build, pe
     Puedes usar [`keystore.properties.template`](keystore.properties.template) como referencia.
 
 3.  Ejecuta la tarea `assembleRelease` desde la ventana de configuraciones (como se vio en la sección Debug) o desde la terminal:
+
     ```bash
     ./gradlew assembleRelease
     ```
@@ -291,10 +322,10 @@ Similar al proceso de Debug, esta opción es ideal para automatizar el build, pe
 </p>
 
 #### Ubicación del Archivo
-*   **Si usaste la Opción A (Asistente)**: Por defecto, Android Studio suele ubicarlo en `composeApp/release/` (o la carpeta que hayas seleccionado durante el paso de destino).
-*   **Si usaste la Opción B (Gradle)**: El archivo estará en `composeApp/build/outputs/apk/release/composeApp-release.apk`.
 
+- **Si usaste la Opción A (Asistente)**: Por defecto, Android Studio suele ubicarlo en `composeApp/release/` (o la carpeta que hayas seleccionado durante el paso de destino).
+- **Si usaste la Opción B (Gradle)**: El archivo estará en `composeApp/build/outputs/apk/release/composeApp-release.apk`.
 
 ## iOS
 
-*Próximamente* - La configuración actual es la predeterminada de Compose Multiplatform.
+_Próximamente_ - La configuración actual es la predeterminada de Compose Multiplatform.
