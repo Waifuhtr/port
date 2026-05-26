@@ -158,6 +158,12 @@ composeApp/src/
 - Match the style and conventions of the surrounding code. When in doubt, look at existing
   implementations in the same package.
 
+### Localization & Translations
+
+- **DO NOT** edit or add `strings.xml` directly under `composeApp/src/commonMain/composeResources/values*`.
+- **Source of Truth**: All localization strings reside under `project/assets/languages/<language_tag>/strings.xml` (e.g., `es/strings.xml`, `en/strings.xml`).
+- **Sync Task**: The custom Gradle task `LanguageStringsSyncTask` runs during compilation to clean and regenerate the `values*` folders in `composeResources` based on the active languages and settings configured in `ludens.properties`. Any manual modifications under `composeResources/values*` will be **permanently lost** on the next build.
+
 ### Commit Messages
 
 Use conventional, descriptive commit messages:

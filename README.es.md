@@ -112,6 +112,15 @@ files/
        └── index.html
 ```
 
+### Localización y Traducciones
+
+Ludens admite múltiples idiomas, los cuales son completamente sincronizados mediante el sistema de compilación:
+
+- **Fuente de la Verdad**: Todos los archivos de traducción (`strings.xml`) DEBEN agregarse o editarse bajo la carpeta raíz `project/assets/languages/<language_tag>/` (por ejemplo, `project/assets/languages/es/strings.xml`).
+- **Sincronización Dinámica**: Durante el tiempo de compilación, una tarea de Gradle limpia las carpetas `values*` generadas dentro de `composeResources` y las actualiza automáticamente con las traducciones activas definidas en `project/assets/` y configuradas en `ludens.properties`.
+- > [!WARNING]
+  > **NO** edites ni agregues archivos `strings.xml` directamente dentro de `composeApp/src/commonMain/composeResources/values*`. Cualquier modificación manual aquí se **perderá permanentemente** en la siguiente compilación.
+
 ### Configuracion Android
 
 Edita [`ludens.properties`](ludens.properties):

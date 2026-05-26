@@ -7,18 +7,24 @@ WebView.
 
 ```
 composeApp/src/
-├── commonMain/kotlin/com/yoimerdr/compose/ludens/
-│   ├── app/          # Theme, navigation, DI (Koin) wiring
-│   ├── core/         # Domain models, ports, platform abstractions (expect/actual)
-│   ├── features/     # Feature modules (home, settings)
-│   └── ui/           # Reusable UI components
+├── commonMain/
+│   ├── kotlin/com/yoimerdr/compose/ludens/
+│   │   ├── app/          # Theme, navigation, DI (Koin) wiring
+│   │   ├── core/         # Domain models, ports, platform abstractions (expect/actual)
+│   │   ├── features/     # Feature modules (home, settings)
+│   │   └── ui/           # Reusable UI components
+│   └── composeResources/ # Platform resources (static assets & dynamically synced resources)
 ├── androidMain/      # Android-specific implementations
 └── iosMain/          # iOS-specific implementations
 
 build-logic/          # Custom Gradle plugins (resource sync, manifest generation)
-project/              # Game assets (www/) and static resources
+project/              # Game assets and static resources
+├── assets/           # Application-wide static assets
+│   ├── fonts/        # TTF/OTF custom typography fonts
+│   └── languages/    # Source of truth for translations/localization (XML files)
+└── www/              # RPG Maker MV/MZ exported game files (HTML, JS, CSS, audio, etc.)
 docs/                 # Astro Starlight documentation site
-resources/            # RPG Maker plugins (e.g., YDP_Ludens.js)
+resources/            # RPG Maker plugins (e.g., YDP_Ludens.js) and other resources
 ```
 
 Key configuration files live at the repository root:
@@ -27,7 +33,60 @@ Key configuration files live at the repository root:
 - `keystore.properties` — Release signing credentials (**do not commit**).
 - `gradle.properties` — Kotlin/Gradle build-system options.
 
+### Deep Dive: `composeResources/` vs `project/`
+
+Understanding the source of truth for resources is critical to prevent build compilation issues.
+
+#### `composeApp/src/commonMain/composeResources/`
+
+This folder is the standard Compose Multiplatform resource location, but it is divided into two
+distinct zones:
+
+- **Static Resources (Manual Edit)**:
+    - `drawable/`: Custom app icons, vectors, and static images.
+    - `files/`: Raw static assets needed by the app. *Developers can add and modify files directly
+      in this folder.* Note that `files/www/` is also where the exported RPG Maker game files
+      reside (either placed here manually or auto-synced).
+- **Synced Resources (Auto-Generated)**:
+    - `values*` (e.g., `values/strings.xml`, `values-es/strings.xml`): Auto-populated from the
+      translation source of truth (`project/assets/languages/`).
+    - `font/`: Auto-populated and synced from custom typography sources (`project/assets/fonts/`).
+    - *DO NOT edit these directories directly. They are completely overwritten or deleted on build.*
+
+#### `project/` Directory
+
+The single source of truth for game code and custom static configuration:
+
+- **`project/assets/`**: Houses app-wide assets that are synced to target platform resources during
+  builds.
+    - **`project/assets/languages/`**: The **ONLY** place where localization files reside. Under
+      each language folder (e.g., `es/`, `en/`, `ja/`, `pt-rBR/`), there is a `strings.xml` file.
+    - **`project/assets/fonts/`**: Contains TTF/OTF font assets imported into the app.
+    - **`project/www/`**: The deployment folder for the RPG Maker game
+        * (Option A): If this directory contains **more than just the default `index.html` file**,
+          the build system automatically synchronizes these files into
+          `composeApp/src/commonMain/composeResources/files/www/` during compile time.
+        * (Option B): If it only contains the default `index.html`, the auto-sync does not trigger
+          and files must be placed directly in the internal `composeResources/files/www/` directory.
+
+### Localization & Translations Rule
+
+**DO NOT** add, edit, or delete `strings.xml` files inside the
+`composeApp/.../composeResources/values*` directories.
+Ludens uses a custom Gradle task (`LanguageStringsSyncTask`) inside `build-logic`. During
+compilation, this task completely cleans all `values*` folders in `composeResources` and
+synchronizes the active languages from `project/assets/languages/`. Any manual changes inside
+`composeResources` will be **permanently lost** on the next build.
+
+**How to localize:**
+
+1. Add/modify translations in `project/assets/languages/<language_tag>/strings.xml` (e.g.,
+   `project/assets/languages/es/strings.xml`).
+2. Enable/disable languages via `ludens.properties`.
+3. Run a build to trigger `LanguageStringsSyncTask` which updates `composeResources` automatically.
+
 ## Approach
+
 - Think before acting. Read existing files before writing code.
 - Be concise in output but thorough in reasoning.
 - Prefer editing over rewriting whole files.
@@ -39,7 +98,6 @@ Key configuration files live at the repository root:
 - No sycophantic openers or closing fluff.
 - Keep solutions simple and direct.
 - User instructions always override this file.
-
 
 ## Build & Development Commands
 

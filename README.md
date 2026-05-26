@@ -112,6 +112,15 @@ files/
        └── index.html
 ```
 
+### Localization & Translations
+
+Ludens supports multiple languages, which are fully synchronized via the build system:
+
+- **Source of Truth**: All localization strings (`strings.xml`) MUST be added or edited under the root folder `project/assets/languages/<language_tag>/` (e.g., `project/assets/languages/es/strings.xml`).
+- **Dynamic Synchronization**: During build time, a custom Gradle task wipes out the generated `values*` folders inside `composeResources` and updates them with active translation configurations from `project/assets/` and `ludens.properties`.
+- > [!WARNING]
+  > **DO NOT** edit or add `strings.xml` directly inside `composeApp/src/commonMain/composeResources/values*`. Any manual modifications here will be **permanently lost** on the next build.
+
 ### Android Configuration
 
 Edit [`ludens.properties`](ludens.properties):
