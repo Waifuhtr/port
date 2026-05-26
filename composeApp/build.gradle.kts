@@ -34,7 +34,7 @@ ludens {
 
 
         languageStringsSync {
-            mode.set(PluginActivationMode.ReleaseOnly)
+            mode.set(PluginActivationMode.All)
         }
 
         languageMetadata()
