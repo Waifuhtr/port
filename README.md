@@ -49,6 +49,7 @@ Ludens is a Compose Multiplatform wrapper built in Kotlin to port RPG Maker MV/M
   - Controls: Enable/Disable, Opacity, Button Positions, Key Mapping.
   - Actions: Configurable quick actions menu (Order, Enable/Disable).
 - Easy app/build configuration from [`ludens.properties`](ludens.properties).
+- Automated App Icon Generator: Compile Android (legacy + adaptive), iOS, and Play Store icons automatically from a single source asset.
 - Efficient asset management in `composeResources/files`.
 
 > [!NOTE]
@@ -120,6 +121,14 @@ Ludens supports multiple languages, which are fully synchronized via the build s
 - **Dynamic Synchronization**: During build time, a custom Gradle task wipes out the generated `values*` folders inside `composeResources` and updates them with active translation configurations from `project/assets/` and `ludens.properties`.
 - > [!WARNING]
   > **DO NOT** edit or add `strings.xml` directly inside `composeApp/src/commonMain/composeResources/values*`. Any manual modifications here will be **permanently lost** on the next build.
+
+### App Icon Generation
+
+Ludens includes an automated **App Icon Generator** plugin that creates all required platform launcher icons:
+
+- **Source of Truth**: Place your source image `icon.svg` or `icon.png` (min 512x512) inside `project/assets/icons/`.
+- **Automatic Generation**: The build system automatically processes these files during compilation, generating adaptive launcher icons for Android, target scaled assets for iOS, and a 512x512 web store listing icon.
+- **Custom Configuration**: You can customize settings (like format, scale, background color) inside the `appIconGenerator` DSL block within `composeApp/build.gradle.kts`. See [BUILD.md](BUILD.md) for more details.
 
 ### Android Configuration
 

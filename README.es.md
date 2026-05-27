@@ -49,6 +49,7 @@ Ludens es un wrapper de Compose Multiplatform desarrollado en Kotlin para portar
   - Controles: Activar/Desactivar, Opacidad, Posiciones, Mapeo de teclas.
   - Acciones: Menu de acciones rapidas configurable (Orden, Habilitar/Deshabilitar).
 - Configuracion de app/build desde [`ludens.properties`](ludens.properties).
+- Generador de Iconos Automatizado: Compila iconos de launcher para Android (legacy + adaptativos), iOS y de la tienda Google Play Store de manera automática a partir de un único asset de origen.
 - Gestion eficiente de assets en `composeResources/files`.
 
 > [!NOTE]
@@ -120,6 +121,14 @@ Ludens admite múltiples idiomas, los cuales son completamente sincronizados med
 - **Sincronización Dinámica**: Durante el tiempo de compilación, una tarea de Gradle limpia las carpetas `values*` generadas dentro de `composeResources` y las actualiza automáticamente con las traducciones activas definidas en `project/assets/` y configuradas en `ludens.properties`.
 - > [!WARNING]
   > **NO** edites ni agregues archivos `strings.xml` directamente dentro de `composeApp/src/commonMain/composeResources/values*`. Cualquier modificación manual aquí se **perderá permanentemente** en la siguiente compilación.
+
+### Generación del Icono de la App
+
+Ludens incluye un plugin de **Generación de Iconos Automatizado** que crea todos los iconos de lanzamiento requeridos por cada plataforma:
+
+- **Fuente de la Verdad**: Coloca tu imagen de origen `icon.svg` o `icon.png` (mínimo 512x512) dentro de `project/assets/icons/`.
+- **Generación Automática**: El sistema de compilación procesa estos archivos de forma automática durante la compilación, generando iconos adaptativos para Android, assets escalados para iOS y el icono de la tienda de Google Play (512x512).
+- **Configuración Personalizada**: Puedes personalizar ajustes como el formato, la escala y el color de fondo dentro del bloque DSL `appIconGenerator` en el archivo `composeApp/build.gradle.kts`. Revisa [BUILD.es.md](BUILD.es.md) para más detalles.
 
 ### Configuracion Android
 

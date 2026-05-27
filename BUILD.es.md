@@ -185,15 +185,70 @@ Estos valores son consumidos por plugins personalizados en `build-logic` durante
 
 #### Icono de la App
 
-Reemplaza las imágenes en `composeApp/src/androidMain/res/mipmap-*` o usa la herramienta **Image Asset Studio**:
+Ludens incluye un plugin de **Generación de Iconos Automatizado** que crea todos los iconos de lanzamiento para cada plataforma a partir de una única imagen de origen (SVG o PNG).
 
-1.  Click derecho en `composeApp/src/androidMain/res`.
-2.  New > Image Asset.
+##### Método A: Generación Automática (Recomendado)
+
+1. Coloca tu imagen de origen del icono dentro del directorio `project/assets/icons/`.
+   - Para obtener mejores resultados, usa una imagen vectorial llamada `icon.svg` o una imagen rasterizada de alta resolución llamada `icon.png` (de al menos 512x512 píxeles).
+   - Si deseas usar capas adaptativas separadas para Android, puedes colocar `icon_foreground.svg`/`icon_foreground.png` e `icon_background.svg`/`icon_background.png` en el mismo directorio.
+2. Configura el generador de iconos en `composeApp/build.gradle.kts` utilizando el bloque DSL `appIconGenerator`:
+
+```kotlin
+ludens {
+    compose {
+        // ... otras configuraciones
+        appIconGenerator {
+            // Formato/tipo para Android: AndroidIconFormat.Png o AndroidIconFormat.Webp
+            androidIconFormat = AndroidIconFormat.Webp
+            
+            // Tratamiento del fondo: puede ser una cadena de color hexadecimal (ej. "#FDFDFD") o 
+            // el nombre de un archivo de imagen origen en project/assets/icons/ sin extensión
+            background = "#FDFDFD"
+            
+            // Activar/desactivar la generación de iconos para plataformas o tiendas específicas
+            enableAndroid = true
+            enableIos = true
+            enablePlaystore = true
+            
+            // Factor de escala para la capa frontal del icono dentro de la zona segura (0.0 a 1.0)
+            iconScale = 0.62
+            
+            // Nombres base personalizados (opcional, por defecto "icon", "icon_foreground" e "icon_background")
+            // name = "icon"
+            // foreground = "icon_foreground"
+        }
+    }
+}
+```
+
+3. Compila el proyecto. El sistema de compilación generará automáticamente:
+   - **Android**: Iconos mipmap heredados (cuadrados y redondos), hojas XML de iconos adaptativos en `mipmap-anydpi-v26` y capas vectoriales/rasterizadas (`ic_launcher_foreground`, `ic_launcher_background`) ubicadas en `androidMain/res/`.
+   - **iOS**: Todos los tamaños necesarios de AppIcon (iPhone, iPad, App Store) junto con su manifiesto `Contents.json` correspondiente en `iosApp/iosApp/Assets.xcassets/AppIcon.appiconset`.
+   - **Google Play Store**: Un icono de alta resolución `ic_launcher-playstore.png` (512x512) para la ficha de la tienda.
+
+##### Método B: Configuración Manual (Alternativa)
+
+Si prefieres generar tus recursos manualmente o usar las herramientas estándar de desarrollo de Android:
+
+> [!WARNING]
+> **Desactivar la Generación Automática**: Para evitar que la tarea del generador automático sobrescriba tus archivos manuales personalizados en cada compilación, **DEBES** desactivar las plataformas automáticas dentro del bloque DSL `appIconGenerator` en tu archivo `composeApp/build.gradle.kts`:
+> ```kotlin
+> appIconGenerator {
+>     enableAndroid = false
+>     enableIos = false
+>     enablePlaystore = false
+> }
+> ```
+
+1. Haz clic derecho en el directorio `composeApp/src/androidMain/res` en Android Studio.
+2. Selecciona **New > Image Asset**.
+3. Sigue el asistente de Image Asset Studio para configurar tus capas y escala.
 
 <p align="center">
   <img src="docs/src/assets/images/guide/ludens-application-icon.png" alt="Configurando el Icono" height="320">
   <br>
-  <em>Figura 7: Uso de Image Asset Studio para actualizar el icono de la aplicación.</em>
+  <em>Figura 7: Uso de Image Asset Studio para actualizar el icono de la aplicación manualmente.</em>
 </p>
 
 ### Compilar y Probar (Debug)
