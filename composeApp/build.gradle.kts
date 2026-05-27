@@ -4,6 +4,8 @@ import ludens.build.compose.configuration.ludensConfiguration
 import ludens.build.compose.fonts.fontsSync
 import ludens.build.compose.language.languageMetadata
 import ludens.build.compose.language.languageStringsSync
+import ludens.build.compose.resources.icons.AndroidIconFormat
+import ludens.build.compose.resources.icons.appIconGenerator
 import ludens.build.compose.resources.filesRes
 import ludens.build.compose.resources.resourcesSync
 import ludens.build.compose.settings.settingsPreset
@@ -42,6 +44,15 @@ ludens {
         fontsSync()
 
         resourcesSync()
+
+        appIconGenerator {
+            androidIconFormat = AndroidIconFormat.Webp
+            background = "#FDFDFD"
+            enableAndroid = true
+            enablePlaystore = true
+            enableIos = true
+            iconScale = 0.62
+        }
     }
     android {
         permissions()
