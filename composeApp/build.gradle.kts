@@ -46,12 +46,14 @@ ludens {
         resourcesSync()
 
         appIconGenerator {
-            androidIconFormat = AndroidIconFormat.Webp
-            background = "#FDFDFD"
-            enableAndroid = true
-            enablePlaystore = true
-            enableIos = true
-            iconScale = 0.62
+            name = ludensConfiguration.icons.name
+            foreground = ludensConfiguration.icons.foreground
+            background = ludensConfiguration.icons.background
+            enableAndroid = ludensConfiguration.icons.android.enable
+            enablePlaystore = ludensConfiguration.icons.android.playstore
+            enableIos = ludensConfiguration.icons.ios.enable
+            androidIconFormat = ludensConfiguration.icons.android.resolvedFormat
+            iconScale = ludensConfiguration.icons.scale
         }
     }
     android {

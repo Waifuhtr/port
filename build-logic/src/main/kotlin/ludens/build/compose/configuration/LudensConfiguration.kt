@@ -44,6 +44,12 @@ data class LudensConfiguration(
      * Loaded from the `ludens.fonts.*` namespace.
      */
     val fonts: LudensFontConfiguration = LudensFontConfiguration(),
+    /**
+     * App icon generator settings.
+     *
+     * Loaded from the `ludens.icons.*` namespace.
+     */
+    val icons: LudensIconConfiguration = LudensIconConfiguration(),
 ) : Serializable
 
 /**
