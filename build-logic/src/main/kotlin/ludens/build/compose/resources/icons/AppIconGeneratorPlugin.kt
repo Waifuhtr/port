@@ -20,12 +20,12 @@
 package ludens.build.compose.resources.icons
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import ludens.build.LudensComposeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import ludens.build.LudensComposeExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 // Extension Data Class for Configuration
 open class AppIconGeneratorExtension {
@@ -43,48 +43,54 @@ class AppIconGeneratorPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         // Register the extension
-        val config = project.extensions.create("appIconGenerator", AppIconGeneratorExtension::class.java)
+        val config =
+            project.extensions.create("appIconGenerator", AppIconGeneratorExtension::class.java)
 
-        val generateIconsTaskProvider = project.tasks.register("generateIcons", AppIconGeneratorTask::class.java) {
-            group = "ludens"
-            description = "Generates Android and iOS icons from a single source image."
+        val generateIconsTaskProvider =
+            project.tasks.register("generateIcons", AppIconGeneratorTask::class.java) {
+                group = "ludens"
+                description = "Generates Android and iOS icons from a single source image."
 
-            // Wire properties from extension to task
-            sourceIconName.set(project.provider { config.name })
-            sourceIconForegroundName.set(project.provider { config.foreground })
-            sourceIconBackgroundName.set(project.provider { config.background })
-            outputAndroid.set(project.provider { config.enableAndroid })
-            outputIos.set(project.provider { config.enableIos })
-            outputPlaystore.set(project.provider { config.enablePlaystore })
-            androidIconFormat.set(project.provider { config.androidIconFormat })
-            iconScale.set(project.provider { config.iconScale })
-            rootDir.set(project.rootDir)
-            commonResourcesDir.set(project.rootProject.layout.projectDirectory.dir("project/assets/icons"))
-            androidResDir.set(project.rootProject.layout.projectDirectory.dir("composeApp/src/androidMain/res"))
-            iosAppIconSetDir.set(project.rootProject.layout.projectDirectory.dir("iosApp/iosApp/Assets.xcassets/AppIcon.appiconset"))
-            playstoreIconFile.set(project.rootProject.layout.projectDirectory.file("composeApp/src/androidMain/ic_launcher-playstore.png"))
-        }
+                // Wire properties from extension to task
+                sourceIconName.set(project.provider { config.name })
+                sourceIconForegroundName.set(project.provider { config.foreground })
+                sourceIconBackgroundName.set(project.provider { config.background })
+                outputAndroid.set(project.provider { config.enableAndroid })
+                outputIos.set(project.provider { config.enableIos })
+                outputPlaystore.set(project.provider { config.enablePlaystore })
+                androidIconFormat.set(project.provider { config.androidIconFormat })
+                iconScale.set(project.provider { config.iconScale })
+                rootDir.set(project.rootDir)
+                commonResourcesDir.set(project.rootProject.layout.projectDirectory.dir("project/assets/icons"))
+                androidResDir.set(project.rootProject.layout.projectDirectory.dir("composeApp/src/androidMain/res"))
+                iosAppIconSetDir.set(project.rootProject.layout.projectDirectory.dir("iosApp/iosApp/Assets.xcassets/AppIcon.appiconset"))
+                playstoreIconFile.set(project.rootProject.layout.projectDirectory.file("composeApp/src/androidMain/ic_launcher-playstore.png"))
+            }
 
         project.pluginManager.withPlugin("com.android.application") {
-            project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
-                val variantName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                listOf(
-                    "merge${variantName}Resources",
-                    "package${variantName}Resources",
-                    "process${variantName}Resources",
-                    "assemble${variantName}"
-                ).forEach { taskName ->
-                    project.tasks.named(taskName) {
+            project.extensions.getByType(AndroidComponentsExtension::class.java)
+                .onVariants { variant ->
+                    val variantName =
+                        variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
+                    project.tasks.matching {
+                        it.name in listOf(
+                            "merge${variantName}Resources",
+                            "package${variantName}Resources",
+                            "process${variantName}Resources",
+                            "assemble${variantName}"
+                        )
+                    }.configureEach {
                         dependsOn(generateIconsTaskProvider)
                     }
                 }
-            }
         }
         project.plugins.withType(KotlinMultiplatformPluginWrapper::class.java) {
-            project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.targets
-                ?.withType(KotlinNativeTarget::class.java)?.configureEach {
-                    binaries.all { linkTaskProvider.configure { dependsOn(generateIconsTaskProvider) } }
-                }
+            project.extensions.findByType(KotlinMultiplatformExtension::class.java)?.targets?.withType(
+                KotlinNativeTarget::class.java
+            )?.configureEach {
+                binaries.all { linkTaskProvider.configure { dependsOn(generateIconsTaskProvider) } }
+            }
         }
     }
 }
