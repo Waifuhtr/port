@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Automated App Icon Generator Gradle plugin and task that compiles Android launcher icons (legacy and adaptive SVG/PNG), iOS app icons (all resolutions and JSON manifest), and Google Play Store listing icons from a single source image in `project/assets/icons/`.
 - New language support: Chinese (`zh`), Japanese (`ja`), Portuguese - Brazil (`pt-rBR`), and Russian (`ru`) for UI. ([@rainbowtrash2333](https://github.com/yoimerdr/ludens/pull/1))
 - Automatic synchronization of web assets from the `project/www/` root directory to Compose resources.
 - Font and language strings sync plugins for resource management within the `build-logic` to strip out unused languages and fonts.
