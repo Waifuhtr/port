@@ -126,7 +126,7 @@ Ludens admite múltiples idiomas, los cuales son completamente sincronizados med
 
 Ludens incluye un plugin de **Generación de Iconos Automatizado** que crea todos los iconos de lanzamiento requeridos por cada plataforma:
 
-- **Fuente de la Verdad**: Coloca tu imagen de origen `icon.svg` o `icon.png` (mínimo 512x512) dentro de `project/assets/icons/`.
+- **Fuente de la Verdad**: Coloca tu imagen de origen `icon.svg` o `icon.png` (`icon.png` mínimo 512x512, o `icon.svg` recomendado) dentro de `project/assets/icons/`.
 - **Generación Automática**: El sistema de compilación procesa estos archivos de forma automática durante la compilación, generando iconos adaptativos para Android, assets escalados para iOS y el icono de la tienda de Google Play (512x512).
 - **Configuración Personalizada**: Puedes personalizar ajustes como el formato, la escala y el color de fondo dentro del bloque DSL `appIconGenerator` en el archivo `composeApp/build.gradle.kts`. Revisa [BUILD.es.md](BUILD.es.md) para más detalles.
 

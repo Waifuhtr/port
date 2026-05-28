@@ -126,7 +126,7 @@ Ludens supports multiple languages, which are fully synchronized via the build s
 
 Ludens includes an automated **App Icon Generator** plugin that creates all required platform launcher icons:
 
-- **Source of Truth**: Place your source image `icon.svg` or `icon.png` (min 512x512) inside `project/assets/icons/`.
+- **Source of Truth**: Place your source image `icon.svg` or `icon.png` (`icon.png` min 512x512, or `icon.svg` recommended) inside `project/assets/icons/`.
 - **Automatic Generation**: The build system automatically processes these files during compilation, generating adaptive launcher icons for Android, target scaled assets for iOS, and a 512x512 web store listing icon.
 - **Custom Configuration**: You can customize settings (like format, scale, background color) inside the `appIconGenerator` DSL block within `composeApp/build.gradle.kts`. See [BUILD.md](BUILD.md) for more details.
 
