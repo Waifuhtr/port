@@ -217,30 +217,34 @@ fun createCombinedImage(
  * @return The corresponding [Color]. Returns [Color.WHITE] when the input cannot be parsed.
  */
 fun parseHexColor(hexColor: String): Color {
-    val hex = if (hexColor.startsWith("#")) hexColor.substring(1) else hexColor
-    return when (hex.length) {
-        3 -> {
-            val r = hex.take(1).repeat(2).toInt(16)
-            val g = hex.substring(1, 2).repeat(2).toInt(16)
-            val b = hex.substring(2, 3).repeat(2).toInt(16)
-            Color(r, g, b)
-        }
+    return try {
+        val hex = if (hexColor.startsWith("#")) hexColor.substring(1) else hexColor
+        when (hex.length) {
+            3 -> {
+                val r = hex.take(1).repeat(2).toInt(16)
+                val g = hex.substring(1, 2).repeat(2).toInt(16)
+                val b = hex.substring(2, 3).repeat(2).toInt(16)
+                Color(r, g, b)
+            }
 
-        6 -> {
-            val r = hex.take(2).toInt(16)
-            val g = hex.substring(2, 4).toInt(16)
-            val b = hex.substring(4, 6).toInt(16)
-            Color(r, g, b)
-        }
+            6 -> {
+                val r = hex.take(2).toInt(16)
+                val g = hex.substring(2, 4).toInt(16)
+                val b = hex.substring(4, 6).toInt(16)
+                Color(r, g, b)
+            }
 
-        8 -> {
-            val a = hex.take(2).toInt(16)
-            val r = hex.substring(2, 4).toInt(16)
-            val g = hex.substring(4, 6).toInt(16)
-            val b = hex.substring(6, 8).toInt(16)
-            Color(r, g, b, a)
-        }
+            8 -> {
+                val a = hex.take(2).toInt(16)
+                val r = hex.substring(2, 4).toInt(16)
+                val g = hex.substring(4, 6).toInt(16)
+                val b = hex.substring(6, 8).toInt(16)
+                Color(r, g, b, a)
+            }
 
-        else -> Color.WHITE
+            else -> Color.WHITE
+        }
+    } catch (e: Exception) {
+        Color.WHITE
     }
 }

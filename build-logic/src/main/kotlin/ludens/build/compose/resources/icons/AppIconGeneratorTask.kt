@@ -22,10 +22,16 @@ package ludens.build.compose.resources.icons
 import ludens.build.helpers.deleteIfExists
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import javax.imageio.ImageIO
@@ -92,7 +98,19 @@ abstract class AppIconGeneratorTask : DefaultTask() {
     abstract val iconScale: Property<Double>
 
     @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val commonResourcesDir: DirectoryProperty
+
+    @get:Internal
+    abstract val androidResDir: DirectoryProperty
+
+    @get:OutputDirectory
+    @get:Optional
+    abstract val iosAppIconSetDir: DirectoryProperty
+
+    @get:OutputFile
+    @get:Optional
+    abstract val playstoreIconFile: RegularFileProperty
 
     @get:Internal
     abstract val rootDir: Property<File>
@@ -101,8 +119,9 @@ abstract class AppIconGeneratorTask : DefaultTask() {
     fun generate() {
         val root = rootDir.get()
         val commonResourcesPath = commonResourcesDir.get().asFile
-        val androidResDir = "${root}/composeApp/src/androidMain/res"
-        val iosAppIconSetDir = File("${root}/iosApp/iosApp/Assets.xcassets/AppIcon.appiconset")
+        val androidResDirFile = androidResDir.orNull?.asFile ?: File("${root}/composeApp/src/androidMain/res")
+        val androidResDir = androidResDirFile.absolutePath
+        val iosAppIconSetDirFile = iosAppIconSetDir.orNull?.asFile ?: File("${root}/iosApp/iosApp/Assets.xcassets/AppIcon.appiconset")
 
         val srcIconName = sourceIconName.get()
         val srcIconForegroundName = sourceIconForegroundName.get()
@@ -115,17 +134,28 @@ abstract class AppIconGeneratorTask : DefaultTask() {
             File("$commonResourcesPath/$srcIconName.svg"),
             File("$commonResourcesPath/$srcIconName.png"),
         ).firstOrNull { it.exists() }
-            ?: throw IllegalArgumentException(
+            ?: error(
                 "No source foreground image file found at $commonResourcesPath " +
                     "using configured names ('$srcIconForegroundName' or '$srcIconName')"
             )
 
         val backgroundIsColor = srcIconBackgroundName.startsWith("#")
 
-        val backgroundSourceFile = if (backgroundIsColor) null else sequenceOf(
-            File("$commonResourcesPath/$srcIconBackgroundName.svg"),
-            File("$commonResourcesPath/$srcIconBackgroundName.png"),
-        ).firstOrNull { it.exists() }
+        val backgroundSourceFile = if (backgroundIsColor) null else {
+            val foundFile = sequenceOf(
+                File("$commonResourcesPath/$srcIconBackgroundName.svg"),
+                File("$commonResourcesPath/$srcIconBackgroundName.png"),
+            ).firstOrNull { it.exists() }
+            
+            if (foundFile == null && srcIconBackgroundName.isNotEmpty()) {
+                error(
+                    "Background resource '$srcIconBackgroundName' configured, but no corresponding " +
+                        "SVG or PNG file was found in $commonResourcesPath. " +
+                        "Please provide a valid background file or use a hex color string (e.g. '#FFFFFF')."
+                )
+            }
+            foundFile
+        }
 
         val androidGenerator = AndroidIconGenerator(logger)
 
@@ -214,7 +244,7 @@ abstract class AppIconGeneratorTask : DefaultTask() {
 
             if (outputPlaystore.get()) {
                 logger.lifecycle("Generating Play Store icon...")
-                val playstoreFile = File("${root}/composeApp/src/androidMain/ic_launcher-playstore.png")
+                val playstoreFile = playstoreIconFile.orNull?.asFile ?: File("${root}/composeApp/src/androidMain/ic_launcher-playstore.png")
                 playstoreFile.deleteIfExists()
                 val combinedImg = createCombinedImage(
                     foregroundFile = foregroundSourceFile,
@@ -233,9 +263,9 @@ abstract class AppIconGeneratorTask : DefaultTask() {
 
         if (outputIos.get()) {
             logger.lifecycle("Generating iOS icons...")
-            if (!iosAppIconSetDir.exists()) iosAppIconSetDir.mkdirs()
+            if (!iosAppIconSetDirFile.exists()) iosAppIconSetDirFile.mkdirs()
 
-            iosAppIconSetDir.listFiles()?.forEach { file ->
+            iosAppIconSetDirFile.listFiles()?.forEach { file ->
                 if (file.extension == "png" || file.name == "Contents.json") file.delete()
             }
 
@@ -251,9 +281,9 @@ abstract class AppIconGeneratorTask : DefaultTask() {
                     iconScale = scale,
                     isRounded = false,
                 )
-                ImageIO.write(combinedImg, "png", File(iosAppIconSetDir, spec.filename))
+                ImageIO.write(combinedImg, "png", File(iosAppIconSetDirFile, spec.filename))
             }
-            iosGenerator.generateContentsJson(iosAppIconSetDir, iosGenerator.iconSpecs)
+            iosGenerator.generateContentsJson(iosAppIconSetDirFile, iosGenerator.iconSpecs)
         } else {
             logger.lifecycle("Skipping iOS icon generation as per configuration.")
         }

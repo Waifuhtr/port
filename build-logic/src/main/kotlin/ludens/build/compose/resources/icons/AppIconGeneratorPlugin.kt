@@ -60,16 +60,21 @@ class AppIconGeneratorPlugin : Plugin<Project> {
             iconScale.set(project.provider { config.iconScale })
             rootDir.set(project.rootDir)
             commonResourcesDir.set(project.rootProject.layout.projectDirectory.dir("project/assets/icons"))
+            androidResDir.set(project.rootProject.layout.projectDirectory.dir("composeApp/src/androidMain/res"))
+            iosAppIconSetDir.set(project.rootProject.layout.projectDirectory.dir("iosApp/iosApp/Assets.xcassets/AppIcon.appiconset"))
+            playstoreIconFile.set(project.rootProject.layout.projectDirectory.file("composeApp/src/androidMain/ic_launcher-playstore.png"))
         }
 
         project.pluginManager.withPlugin("com.android.application") {
             project.extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
                 val variantName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                project.tasks.configureEach {
-                    if (name == "merge${variantName}Resources" || 
-                        name == "package${variantName}Resources" ||
-                        name == "process${variantName}Resources" ||
-                        name == "assemble${variantName}") {
+                listOf(
+                    "merge${variantName}Resources",
+                    "package${variantName}Resources",
+                    "process${variantName}Resources",
+                    "assemble${variantName}"
+                ).forEach { taskName ->
+                    project.tasks.named(taskName) {
                         dependsOn(generateIconsTaskProvider)
                     }
                 }
