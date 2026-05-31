@@ -41,10 +41,7 @@ import kotlinx.serialization.json.Json
  */
 const val PluginCheckerFile = FileRes.boot.js.plugin_checker
 
-/**
- * The path to the JavaScript error logger file that intercepts global exceptions.
- */
-const val ErrorLoggerFile = FileRes.boot.js.error_logger
+
 
 /**
  * JavaScript message handler that processes plugin loading events from the web view.
@@ -271,12 +268,6 @@ private fun ErrorBridge(
     LaunchedEffect(bridge) {
         bridge.register(GameErrorHandler)
     }
-
-    EvaluateScriptOnStart(
-        filepath = ErrorLoggerFile,
-        state = state,
-        navigator = navigator,
-    )
 
     LaunchedEffect(state.errorsForCurrentRequest) {
         if (state.errorsForCurrentRequest.isNotEmpty() && BuildKonfig.LUDENS_DEBUG_ERRORS) {
