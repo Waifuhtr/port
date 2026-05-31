@@ -1,6 +1,7 @@
 package com.yoimerdr.compose.ludens.ui.components.dialogs
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +14,15 @@ import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yoimerdr.compose.ludens.ui.components.provider.LocalSpacing
+import com.yoimerdr.compose.ludens.ui.extensions.modifier.contentPadding
 import com.yoimerdr.compose.ludens.ui.extensions.setClipText
 import kotlinx.coroutines.launch
 import ludens.composeapp.generated.resources.Res
@@ -63,6 +67,13 @@ fun ErrorTracebackDialog(
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
 
+    val formattedStackTrace = remember(stackTrace) {
+        val regex = Regex("""[^( ]*www/""")
+        stackTrace.lines().joinToString("\n") { line ->
+            line.replace(regex, "www/")
+        }
+    }
+
     BaseDialog(
         showDialog = showDialog,
         onDismiss = onDismiss,
@@ -88,13 +99,20 @@ fun ErrorTracebackDialog(
                         color = MaterialTheme.colorScheme.surfaceContainerLow,
                         shape = MaterialTheme.shapes.medium
                     )
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        shape = MaterialTheme.shapes.medium
+                    )
                     .padding(spacing.medium)
             ) {
                 val verticalScrollState = rememberScrollState()
                 val horizontalScrollState = rememberScrollState()
                 Text(
-                    text = stackTrace,
-                    style = MaterialTheme.typography.bodySmall,
+                    text = formattedStackTrace,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontFamily = FontFamily.Monospace
+                    ),
                     modifier = Modifier
                         .verticalScroll(verticalScrollState)
                         .horizontalScroll(horizontalScrollState)
@@ -107,7 +125,7 @@ fun ErrorTracebackDialog(
             confirmText = restartText,
             onDismiss = {
                 coroutineScope.launch {
-                    clipboard.setClipText("$errorMessage\n\n$stackTrace")
+                    clipboard.setClipText(formattedStackTrace)
                 }
             },
             onConfirm = onRestart
