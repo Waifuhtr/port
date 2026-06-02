@@ -1,5 +1,6 @@
 package com.yoimerdr.compose.ludens.ui.extensions
 
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.platform.Clipboard
 
 /**
@@ -7,4 +8,5 @@ import androidx.compose.ui.platform.Clipboard
  *
  * @param text The plain text to copy.
  */
+@OptIn(ExperimentalComposeUiApi::class)
 expect suspend fun Clipboard.setClipText(text: String)
