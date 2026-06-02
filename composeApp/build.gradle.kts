@@ -78,6 +78,11 @@ buildkonfig {
             "LUDENS_IMMERSIVE",
             ludensConfiguration.android.immersive.toString()
         )
+        buildConfigField(
+            Type.BOOLEAN,
+            "LUDENS_DEBUG_ERRORS",
+            ludensConfiguration.debug.errors.toString()
+        )
     }
 }
 

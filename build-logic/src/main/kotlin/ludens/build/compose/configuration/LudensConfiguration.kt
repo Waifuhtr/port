@@ -50,6 +50,12 @@ data class LudensConfiguration(
      * Loaded from the `ludens.icons.*` namespace.
      */
     val icons: LudensIconConfiguration = LudensIconConfiguration(),
+    /**
+     * Application debugging and tracing settings.
+     *
+     * Loaded from the `ludens.debug.*` namespace.
+     */
+    val debug: LudensDebugConfiguration = LudensDebugConfiguration(),
 ) : Serializable
 
 /**
