@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -33,6 +34,7 @@ import com.yoimerdr.compose.ludens.ui.components.webview.rememberPlatformsParame
 import com.yoimerdr.compose.ludens.ui.components.webview.rememberWebViewJsBridge
 import com.yoimerdr.compose.ludens.ui.components.webview.setup
 import com.yoimerdr.compose.ludens.ui.state.PluginState
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -41,7 +43,10 @@ import kotlinx.serialization.json.Json
  */
 const val PluginCheckerFile = FileRes.boot.js.plugin_checker
 
-
+/**
+ * The path to the JavaScript error logger file that intercepts global exceptions.
+ */
+const val ErrorLoggerFile = FileRes.boot.js.error_logger
 
 /**
  * JavaScript message handler that processes plugin loading events from the web view.
@@ -269,18 +274,30 @@ private fun ErrorBridge(
         bridge.register(GameErrorHandler)
     }
 
-    LaunchedEffect(state.errorsForCurrentRequest) {
-        if (state.errorsForCurrentRequest.isNotEmpty() && BuildKonfig.LUDENS_DEBUG_ERRORS) {
-            onError?.invoke(
-                WebGameError(
-                    message = "WebView Loading Failed",
-                    source = state.lastLoadedUrl ?: "unknown",
-                    line = 0,
-                    column = 0,
-                    stackTrace = "Failed to load page: ${state.lastLoadedUrl ?: "unknown URL"}"
-                )
-            )
-        }
+    EvaluateScriptOnStart(
+        filepath = ErrorLoggerFile,
+        state = state,
+        navigator = navigator,
+    )
+
+    LaunchedEffect(state) {
+        snapshotFlow { state.errorsForCurrentRequest.lastOrNull { it.isFromMainFrame } }
+            .filterNotNull()
+            .collect { error ->
+                if (BuildKonfig.LUDENS_DEBUG_ERRORS) {
+                    onError?.invoke(
+                        WebGameError(
+                            message = "WebView Loading Failed",
+                            source = state.lastLoadedUrl ?: "unknown",
+                            line = 0,
+                            column = 0,
+                            stackTrace = "Failed to load page: ${state.lastLoadedUrl ?: "unknown URL"}\n" +
+                                    "Error Code: ${error.code}\n" +
+                                    "Description: ${error.description}"
+                        )
+                    )
+                }
+            }
     }
 }
 

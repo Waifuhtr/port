@@ -6,10 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import com.multiplatform.webview.web.LoadingState
 import com.multiplatform.webview.web.WebViewNavigator
 import com.multiplatform.webview.web.WebViewState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import ludens.composeapp.generated.resources.Res
 
 
@@ -48,21 +51,18 @@ fun EvaluateScriptOnStart(
     state: WebViewState,
     onStart: suspend CoroutineScope.(String) -> Unit,
 ) {
-    var loaded by rememberSaveable { mutableStateOf(false) }
-    var script by rememberSaveable { mutableStateOf<String?>(null) }
+    var script by rememberSaveable(filepath) { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(filepath) {
         script = Res.readBytes(filepath).decodeToString()
     }
 
     EvaluateOnStart(state) {
-        loaded = true
-    }
+        val currentScript = script ?: snapshotFlow { script }
+            .filterNotNull()
+            .first()
 
-    LaunchedEffect(loaded, script) {
-        if (loaded && script != null) {
-            onStart(script!!)
-        }
+        onStart(currentScript)
     }
 }
 
