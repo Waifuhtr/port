@@ -35,8 +35,7 @@ fun KeyEvent.toEventProperties(): List<KeyEventProperty> {
  * @return A string representing the JavaScript object literal.
  */
 fun KeyEvent.toEventPropertiesString(): String {
-    return toEventProperties()
-        .joinToString(separator = ",", prefix = "{", postfix = "}") {
+    return toEventProperties().joinToString(separator = ",", prefix = "{", postfix = "}") {
             val (name, value, isStrict) = it
 
             "'$name': ${if (!isStrict && value is CharSequence) "'${value}'" else value}"
@@ -56,7 +55,7 @@ fun MovementKeyEvent.toEventScript(): String {
     // edit directly for movement state
     val isActive = type == KeyEventType.Down
     val stateName = movement.name.lowercase()
-    return "Input._currentState['${stateName}']=$isActive"
+    return "typeof Input !== 'undefined' && Input && Input._currentState && Input._currentState['${stateName}']=$isActive"
 }
 
 /**
@@ -70,10 +69,8 @@ fun MovementKeyEvent.toEventScript(): String {
 fun InputKeyEvent.toEventScript(): String {
     // for other codes, whe use the Input callbacks
     val properties = toEventPropertiesString()
-    return when (type) {
-        KeyEventType.Up -> "Input._onKeyUp($properties)"
-        else -> "Input._onKeyDown($properties)"
-    }
+    val method = if (type == KeyEventType.Up) "_onKeyUp" else "_onKeyDown"
+    return "typeof Input !== 'undefined' && Input && Input.$method && Input.$method($properties); "
 }
 
 /**
@@ -87,7 +84,7 @@ fun InputKeyEvent.toEventScript(): String {
 fun GraphicsKeyEvent.toEventScript(): String {
     // for graphics key, whe only use the onKeyDown event
     val properties = toEventPropertiesString()
-    return "Graphics._onKeyDown($properties)"
+    return "typeof Graphics !== 'undefined' && Graphics && Graphics._onKeyDown && Graphics._onKeyDown($properties);"
 }
 
 /**
@@ -121,7 +118,6 @@ fun KeyEvent.toScript(): String {
     } else state
 }
 
-
 /**
  * Builder implementation of [KeyEventScriptBuilder].
  *
@@ -149,7 +145,6 @@ class JavascriptKeyEventScriptBuilder : KeyEventScriptBuilder {
         return this
     }
 
-
     override fun restart(): KeyEventScriptBuilder {
         keys.clear()
         return this
@@ -169,8 +164,7 @@ class JavascriptKeyEventScriptBuilder : KeyEventScriptBuilder {
 
             script.append("setTimeout(function(){")
                 .append(events.joinToString(separator = " ") { key -> "${key.toKeyEventScript()};" })
-                .append("},$timeout);")
-                .appendLine()
+                .append("},$timeout);").appendLine()
         }
 
 
