@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.yoimerdr.compose.ludens.ui.components.provider.LocalSpacing
-import com.yoimerdr.compose.ludens.ui.extensions.modifier.contentPadding
 import com.yoimerdr.compose.ludens.ui.extensions.setClipText
 import kotlinx.coroutines.launch
 import ludens.composeapp.generated.resources.Res
