@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved configuration files and enhanced internal documentation for clarity.
 - Changed how plugins are applied: now there is only a single `ludens.build` plugin, and the others must be activated/applied using the DSL in gradle.
 - Updated project documentation (`README`, `BUILD`, `CONTRIBUTING`) to detail the new root folder asset synchronization method.
+- Replace 404 page with game setup placeholder for default index.html pages.
 
 ### Fixed
 
