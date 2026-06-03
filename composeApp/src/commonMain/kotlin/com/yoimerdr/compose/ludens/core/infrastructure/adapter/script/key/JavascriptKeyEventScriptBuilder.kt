@@ -55,7 +55,7 @@ fun MovementKeyEvent.toEventScript(): String {
     // edit directly for movement state
     val isActive = type == KeyEventType.Down
     val stateName = movement.name.lowercase()
-    return "typeof Input !== 'undefined' && Input && Input._currentState && Input._currentState['${stateName}']=$isActive"
+    return "typeof Input !== 'undefined' && Input && Input._currentState && (Input._currentState['${stateName}']=$isActive)"
 }
 
 /**
