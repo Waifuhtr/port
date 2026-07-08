@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.yoimerdr.compose.ludens.app.navigation.Destination
 import com.yoimerdr.compose.ludens.app.ui.providers.LocalFPSPlayer
+import com.yoimerdr.compose.ludens.bridge.JsBridge // ← YENİ
 import com.yoimerdr.compose.ludens.core.domain.model.settings.ActionType
 import com.yoimerdr.compose.ludens.features.home.presentation.sections.HomeScreenContent
 import com.yoimerdr.compose.ludens.features.home.presentation.sections.WebGame
@@ -50,6 +51,7 @@ import org.jetbrains.compose.resources.stringResource
  * @param viewModel The home view model managing screen state and event handling.
  * @param onLoad Optional callback invoked when the game plugin is loaded, receiving the plugin state
  * @param onRestart Optional callback invoked when a restart request is resolved.
+ * @param onJsBridgeReady Optional callback invoked when the WebView bridge is ready. ← YENİ
  */
 @Composable
 fun HomeScreen(
@@ -58,6 +60,7 @@ fun HomeScreen(
     showControls: Boolean = true,
     onLoad: ((PluginState) -> Unit)? = null,
     onRestart: (() -> Unit)? = null,
+    onJsBridgeReady: ((JsBridge) -> Unit)? = null, // ← YENİ
 ) {
     HomeScreenEffects(
         viewModel = viewModel,
@@ -74,7 +77,8 @@ fun HomeScreen(
 
             WebGame(
                 viewModel = viewModel,
-                onLoad = onLoad
+                onLoad = onLoad,
+                onJsBridgeReady = onJsBridgeReady // ← YENİ: WebView bridge App.kt'ye iletiliyor
             )
         },
         fullForegroundContent = {
