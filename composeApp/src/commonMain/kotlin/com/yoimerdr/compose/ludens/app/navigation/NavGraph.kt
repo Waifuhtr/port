@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.yoimerdr.compose.ludens.app.ui.screens.SplashScreen
+import com.yoimerdr.compose.ludens.bridge.JsBridge // ← YENİ: Hile/Gamepad/Plugin bridge
 import com.yoimerdr.compose.ludens.features.home.presentation.screen.HomeScreen
 import com.yoimerdr.compose.ludens.features.home.presentation.viewmodel.HomeViewModel
 import com.yoimerdr.compose.ludens.features.settings.presentation.screens.SettingsPositionsScreen
@@ -40,12 +41,16 @@ import org.koin.compose.viewmodel.koinViewModel
  * @param navController The navigation controller used for all app routes.
  * @param systemViewModel View model used by the settings flow.
  * @param homeViewModel View model used by the home flow.
+ * @param jsBridge Bridge instance for cheat/gamepad/plugin features. ← YENİ
+ * @param onJsBridgeReady Callback invoked when HomeScreen creates the WebView bridge. ← YENİ
  */
 @Composable
 fun NavGraph(
     navController: NavHostController,
     systemViewModel: SystemSettingsViewModel = koinViewModel(),
     homeViewModel: HomeViewModel = koinViewModel(),
+    jsBridge: JsBridge? = null, // ← YENİ
+    onJsBridgeReady: ((JsBridge) -> Unit)? = null, // ← YENİ
 ) {
     var plugin by rememberSaveable(stateSaver = PluginStateSaver) {
         mutableStateOf(PluginState())
@@ -71,7 +76,8 @@ fun NavGraph(
             onLoad = {
                 plugin = it
             },
-            onRestart = onRestart
+            onRestart = onRestart,
+            onJsBridgeReady = onJsBridgeReady // ← YENİ
         )
 
         NavHost(
@@ -136,7 +142,8 @@ fun NavGraph(
                     SettingsScreen(
                         nav = navController,
                         systemViewModel = systemViewModel,
-                        onRestart = onRestart
+                        onRestart = onRestart,
+                        jsBridge = jsBridge // ← YENİ: Hile menüsüne bridge erişimi
                     )
                 }
             }
@@ -176,6 +183,7 @@ fun NavGraph(
  * @param viewModel The home screen view model.
  * @param onLoad Optional callback invoked when the home screen finishes loading plugin state.
  * @param onRestart Optional callback invoked when the user requests a full restart.
+ * @param onJsBridgeReady Optional callback invoked when the WebView bridge is ready. ← YENİ
  */
 @Composable
 private fun NavHomeGraph(
@@ -183,6 +191,7 @@ private fun NavHomeGraph(
     viewModel: HomeViewModel,
     onLoad: ((PluginState) -> Unit)? = null,
     onRestart: (() -> Unit)? = null,
+    onJsBridgeReady: ((JsBridge) -> Unit)? = null, // ← YENİ
 ) {
     val currentRoute = nav.currentBackStackEntryAsState().value?.destination?.route
     val show = currentRoute != null && currentRoute != Destination.Splash.route
@@ -203,7 +212,8 @@ private fun NavHomeGraph(
                 onLoad = onLoad,
                 viewModel = viewModel,
                 showControls = currentRoute?.contains(Destination.Settings.route) == false,
-                onRestart = onRestart
+                onRestart = onRestart,
+                onJsBridgeReady = onJsBridgeReady // ← YENİ: WebView bridge App.kt'ye iletiliyor
             )
         }
     }
