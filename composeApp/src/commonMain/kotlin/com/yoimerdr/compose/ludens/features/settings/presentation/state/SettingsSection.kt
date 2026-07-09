@@ -18,4 +18,13 @@ enum class SettingsSection {
 
     /** About section. */
     About,
+
+    /** Cheat menu section. */
+    Cheat,
+
+    /** Gamepad mapper section. */
+    Gamepad,
+
+    /** Plugin manager section. */
+    Plugins,
 }
