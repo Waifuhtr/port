@@ -44,6 +44,10 @@
     <string name="stc_tabs_tools">Tools</string>
     <string name="stc_tabs_system">System</string>
     <string name="stc_tabs_about">About</string>
+    <!-- ← YENİ: Mod sekmeleri -->
+    <string name="stc_tabs_cheat">🎮 Hileler</string>
+    <string name="stc_tabs_gamepad">🕹️ Gamepad</string>
+    <string name="stc_tabs_plugins">🔌 Pluginler</string>
     <!--Settings - Tools-->
     <string name="stc_tools_move_controls">Move the controls</string>
     <string name="stc_tools_mute_audio">Mute audio</string>
