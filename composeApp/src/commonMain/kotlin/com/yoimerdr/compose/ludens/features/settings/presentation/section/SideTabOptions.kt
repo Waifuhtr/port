@@ -41,6 +41,12 @@ import ludens.composeapp.generated.resources.stc_tabs_actions
 import ludens.composeapp.generated.resources.stc_tabs_controls
 import ludens.composeapp.generated.resources.stc_tabs_system
 import ludens.composeapp.generated.resources.stc_tabs_tools
+// ← YENİ: Mod sekmeleri için string kaynakları
+// EĞER BU KAYNAKLAR YOKSA, aşağıdaki stringResource(...) çağrılarını
+// doğrudan "🎮 Hileler" gibi hardcoded string'lere çevir
+import ludens.composeapp.generated.resources.stc_tabs_cheat
+import ludens.composeapp.generated.resources.stc_tabs_gamepad
+import ludens.composeapp.generated.resources.stc_tabs_plugins
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -64,6 +70,10 @@ private fun SettingsTabOption(
         SettingsSection.System -> LudensIcons.Default.System
         SettingsSection.About -> LudensIcons.Default.BroadActivityFeed
         SettingsSection.Actions -> LudensIcons.Default.AppsList
+        // ← YENİ: Mod sekmeleri için ikonlar (mevcut ikon setinden en yakın olanlar)
+        SettingsSection.Cheat -> LudensIcons.Default.Games
+        SettingsSection.Gamepad -> LudensIcons.Default.Games
+        SettingsSection.Plugins -> LudensIcons.Default.Apps
     }
 
     val text = stringResource(
@@ -73,6 +83,10 @@ private fun SettingsTabOption(
             SettingsSection.System -> Res.string.stc_tabs_system
             SettingsSection.About -> Res.string.stc_tabs_about
             SettingsSection.Actions -> Res.string.stc_tabs_actions
+            // ← YENİ: Mod sekmeleri için string kaynakları
+            SettingsSection.Cheat -> Res.string.stc_tabs_cheat
+            SettingsSection.Gamepad -> Res.string.stc_tabs_gamepad
+            SettingsSection.Plugins -> Res.string.stc_tabs_plugins
         }
     )
 
