@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.yoimerdr.compose.ludens.app.navigation.Destination
 import com.yoimerdr.compose.ludens.app.navigation.navigateTo
+import com.yoimerdr.compose.ludens.bridge.JsBridge // ← YENİ
 import com.yoimerdr.compose.ludens.core.domain.model.settings.ActionType
 import com.yoimerdr.compose.ludens.features.settings.presentation.layout.SettingsContents
 import com.yoimerdr.compose.ludens.features.settings.presentation.state.events.SettingsEvent
@@ -45,6 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * @param toolsViewModel The tools settings view model.
  * @param systemViewModel The system settings view model.
  * @param actionViewModel The action settings view model.
+ * @param jsBridge Bridge instance for cheat/gamepad/plugin features. ← YENİ
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -58,6 +60,7 @@ fun SettingsScreen(
     onRestart: () -> Unit = {
         nav.navigateTo(Destination.Splash)
     },
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     val interactionManager = LocalInteractionManager.current
     val request by interactionManager.request.collectAsStateWithLifecycle()
@@ -94,6 +97,7 @@ fun SettingsScreen(
             toolsViewModel = toolsViewModel,
             systemViewModel = systemViewModel,
             actionViewModel = actionViewModel,
+            jsBridge = jsBridge, // ← YENİ: Mod ekranlarına bridge erişimi
         )
 
         ConfirmationDialog(
