@@ -24,6 +24,7 @@ import com.multiplatform.webview.web.WebViewFileReadType
 import com.multiplatform.webview.web.WebViewNavigator
 import com.multiplatform.webview.web.WebViewState
 import com.yoimerdr.compose.ludens.app.ui.providers.LocalWebViewNavigator
+import com.yoimerdr.compose.ludens.bridge.JsBridge // ← YENİ
 import com.yoimerdr.compose.ludens.features.home.presentation.sections.LudensLoaderHandler.onLoad
 import com.yoimerdr.compose.ludens.features.home.presentation.viewmodel.HomeViewModel
 import com.yoimerdr.compose.ludens.generated.res.FileRes
@@ -82,12 +83,14 @@ private object LudensLoaderHandler : IJsMessageHandler {
  * @param modifier The modifier to be applied to the web view
  * @param fileUrl The URL/path of the HTML file to load from compose resources
  * @param onLoad Optional callback invoked when the game plugin is loaded, receiving the plugin state
+ * @param onJsBridgeReady Optional callback invoked when the WebView is ready for JS bridge operations. ← YENİ
  */
 @Composable
 fun WebGame(
     modifier: Modifier = Modifier,
     fileUrl: String,
     onLoad: ((PluginState) -> Unit)? = null,
+    onJsBridgeReady: ((JsBridge) -> Unit)? = null, // ← YENİ
 ) {
     val navigator = LocalWebViewNavigator.current
     val state = rememberSaveable(saver = WebStateSaver) {
@@ -125,13 +128,21 @@ fun WebGame(
 
     WebViewMemoryManager(state, navigator)
 
+    // ← YENİ: WebView oluşturulduğunda JsBridge'i initialize et ve callback'i çağır
+    var jsBridge by remember { mutableStateOf<JsBridge?>(null) }
+    
     WebView(
         state = state,
         modifier = modifier.fillMaxSize().focusRequester(focusRequester),
         navigator = navigator,
         webViewJsBridge = bridge,
         platformWebViewParams = rememberPlatformsParameters(),
-        onCreated = ::setup
+        onCreated = { nativeWebView ->
+            setup(nativeWebView)
+            // ← YENİ: WebView hazır olduğunda JsBridge oluştur
+            jsBridge = JsBridge(nativeWebView)
+            onJsBridgeReady?.invoke(jsBridge!!)
+        }
     )
 }
 
@@ -147,12 +158,14 @@ fun WebGame(
  * @param viewModel The view model for managing the entry state
  * @param modifier The modifier to be applied to the web view
  * @param onLoad Optional callback invoked when the game plugin is loaded, receiving the plugin state
+ * @param onJsBridgeReady Optional callback invoked when the WebView bridge is ready. ← YENİ
  */
 @Composable
 fun WebGame(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
     onLoad: ((PluginState) -> Unit)? = null,
+    onJsBridgeReady: ((JsBridge) -> Unit)? = null, // ← YENİ
 ) {
     val entry by viewModel.entryState.collectAsStateWithLifecycle()
 
@@ -160,6 +173,7 @@ fun WebGame(
         modifier = modifier,
         fileUrl = entry.url,
         onLoad = onLoad,
+        onJsBridgeReady = onJsBridgeReady, // ← YENİ
     )
 }
 
