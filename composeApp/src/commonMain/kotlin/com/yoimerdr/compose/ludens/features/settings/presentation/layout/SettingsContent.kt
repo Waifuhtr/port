@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -26,6 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+// ← YENİ: Mod ekran importları
+import com.yoimerdr.compose.ludens.bridge.JsBridge
+import com.yoimerdr.compose.ludens.cheat.CheatMenuScreen
+import com.yoimerdr.compose.ludens.gamepad.GamepadMapperScreen
+import com.yoimerdr.compose.ludens.plugin.PluginManagerScreen
 import com.yoimerdr.compose.ludens.features.settings.presentation.section.AboutSection
 import com.yoimerdr.compose.ludens.features.settings.presentation.section.ActionSettingsSection
 import com.yoimerdr.compose.ludens.features.settings.presentation.section.ControlsSettingsSection
@@ -52,6 +56,7 @@ import com.yoimerdr.compose.ludens.ui.components.provider.LocalSpacing
  * @param toolsViewModel The tools settings view model.
  * @param systemViewModel The system settings view model.
  * @param actionViewModel The action settings view model.
+ * @param jsBridge Bridge instance for cheat/gamepad/plugin features. ← YENİ
  */
 @Composable
 fun SettingsContents(
@@ -61,6 +66,7 @@ fun SettingsContents(
     toolsViewModel: ToolsSettingsViewModel,
     systemViewModel: SystemSettingsViewModel,
     actionViewModel: ActionSettingsViewModel,
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     val spacing = LocalSpacing.current
     val breakpoints = LocalBreakpoints.current
@@ -110,6 +116,7 @@ fun SettingsContents(
                 contentMaxWidth = contentMaxWidth,
                 shellGap = shellGap,
                 onClose = onClose,
+                jsBridge = jsBridge, // ← YENİ
             )
         },
         medium = {
@@ -127,6 +134,7 @@ fun SettingsContents(
                 railWidth = railWidth,
                 shellGap = shellGap,
                 onClose = onClose,
+                jsBridge = jsBridge, // ← YENİ
             )
         },
     )
@@ -143,6 +151,7 @@ private fun CompactSettingsContent(
     contentMaxWidth: Dp = 980.dp,
     shellGap: Dp = LocalSpacing.current.large,
     onClose: () -> Unit,
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     Column(
         modifier = Modifier
@@ -170,6 +179,7 @@ private fun CompactSettingsContent(
                 toolsViewModel = toolsViewModel,
                 systemViewModel = systemViewModel,
                 actionViewModel = actionViewModel,
+                jsBridge = jsBridge, // ← YENİ
             )
         }
     }
@@ -188,6 +198,7 @@ private fun ExpandedSettingsContent(
     railWidth: Dp = 192.dp,
     shellGap: Dp = LocalSpacing.current.large,
     onClose: () -> Unit,
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     val spacing = LocalSpacing.current
     val shellMaxWidth: Dp = railWidth + shellGap + contentMaxWidth
@@ -230,6 +241,7 @@ private fun ExpandedSettingsContent(
                     toolsViewModel = toolsViewModel,
                     systemViewModel = systemViewModel,
                     actionViewModel = actionViewModel,
+                    jsBridge = jsBridge, // ← YENİ
                 )
             }
         }
@@ -251,6 +263,7 @@ private fun SettingsSectionContent(
     railWidth: Dp = 192.dp,
     shellGap: Dp = LocalSpacing.current.large,
     onClose: () -> Unit,
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     Box(
         modifier = Modifier
@@ -269,6 +282,7 @@ private fun SettingsSectionContent(
                 contentMaxWidth = contentMaxWidth,
                 shellGap = shellGap,
                 onClose = onClose,
+                jsBridge = jsBridge, // ← YENİ
             )
         } else {
             ExpandedSettingsContent(
@@ -283,6 +297,7 @@ private fun SettingsSectionContent(
                 railWidth = railWidth,
                 shellGap = shellGap,
                 onClose = onClose,
+                jsBridge = jsBridge, // ← YENİ
             )
         }
     }
@@ -292,6 +307,7 @@ private fun SettingsSectionContent(
  * Renders the currently selected settings section without altering its behavior.
  *
  * @param viewModel The settings view model.
+ * @param jsBridge Bridge instance for cheat/gamepad/plugin features. ← YENİ
  */
 @Composable
 private fun SettingsSectionContent(
@@ -301,6 +317,7 @@ private fun SettingsSectionContent(
     systemViewModel: SystemSettingsViewModel,
     actionViewModel: ActionSettingsViewModel,
     section: SettingsSection,
+    jsBridge: JsBridge? = null, // ← YENİ
 ) {
     when (section) {
         SettingsSection.Controls -> {
@@ -331,6 +348,28 @@ private fun SettingsSectionContent(
         SettingsSection.Actions -> {
             ActionSettingsSection(
                 viewModel = actionViewModel
+            )
+        }
+
+        // ← YENİ: Mod sekmeleri
+        SettingsSection.Cheat -> {
+            CheatMenuScreen(jsBridge = jsBridge)
+        }
+
+        SettingsSection.Gamepad -> {
+            GamepadMapperScreen(
+                onSave = { mappings ->
+                    // TODO: SharedPreferences / DataStore'e kaydet
+                },
+                onReset = {
+                    // TODO: Varsayılan değerlere sıfırla
+                }
+            )
+        }
+
+        SettingsSection.Plugins -> {
+            PluginManagerScreen(
+                wwwPath = "/data/data/com.yoimerdr.compose.ludens/files/www"
             )
         }
     }
